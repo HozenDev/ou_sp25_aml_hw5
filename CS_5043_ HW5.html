@@ -1,0 +1,363 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<title>CS 5043: HW5</title>
+</head>
+
+<body>
+<h1>CS 5043: HW5: Probabilistic Neural Networks</h1>
+
+Assignment notes:
+<ul>
+  <li>  Deadline: Thursday, April 10th @11:59pm.
+       <p>
+       
+  </p></li><li> Hand-in procedure: submit a zip file to Gradescope
+       <p>
+       
+  </p></li><li> This work is to be done on your own.   However, you may share
+       solution-specific code snippets in the open on  
+       Slack (only!), but not full solutions.  Downloading
+       solution-specific materials (text and code) is not allowed
+       (from web pages or from LLMs).  
+       <p>
+  </p></li><li> Last updated: 2025-04-02 23:00.  Changes are shown in bold.
+       <p>
+
+       
+</p></li></ul>
+
+<h2>The Problem</h2>
+The <a href="https://www.mesonet.org/files/materials/mesonet.pdf">Oklahoma
+Mesonet</a> is a network of weather stations scattered across the
+state of Oklahoma, with at least one station in each county.  Each
+station measures many different meteorological variables every 5
+minutes.  Our data set contains a single summary sample for each
+of the 136 stations and each day from 1994 to 2000.  
+
+<p>
+
+The measured variables are described in the 
+<a href="https://www.mesonet.org/about/data-descriptions/daily-summaries">Mesonet
+Daily Summary Data</a> document.  For this assignment we will be
+predicting the rainfall for the day (RAIN) given the other measured variables
+at the station.  These variables are:
+
+</p><ul>
+<li> TMAX
+</li><li> TMIN
+</li><li> TAVG
+</li><li> DMAX
+</li><li> DMIN
+</li><li> DAVG
+</li><li> VDEF
+</li><li> SMAX
+</li><li> SMIN
+</li><li> SAVG
+</li><li> BMAX
+</li><li> BMIN
+</li><li> BAVG
+</li><li> HMAX
+</li><li> HMIN
+</li><li> HAVG
+</li><li> PMAX
+</li><li> PMIN
+</li><li> PAVG
+</li><li> MSLP
+</li><li> AMAX
+</li><li> ATOT
+</li><li> WSMX
+</li><li> WSMN
+</li><li> WSPD
+</li><li> WDEV
+</li><li> WMAX
+</li><li> 9AVG
+</li><li> 2MAX
+</li><li> 2MIN
+</li><li> 2AVG
+</li><li> 2DEV
+</li><li> HDEG
+</li><li> CDEG
+</li><li> HTMX
+</li><li> WCMN
+</li></ul>
+
+
+The Data set is available on SCHOONER:
+<b>/home/fagg/datasets/mesonet/allData1994_2000.csv</b>
+
+<h2>Supporting Code</h2>
+
+The <a href="https://symbiotic-computing.org/fagg_html/classes/aml_2025/code/hw5/">supporting code</a> provides key
+functionality.
+
+<p>
+</p><ul>
+  <li> <b>Loading Datasets</b>
+<h3></h3>
+
+<pre>    get_mesonet_folds(dataset_fname:str,
+                      ntrain_folds: int = 6, 
+                      nvalid_folds: int = 1, 
+                      ntest_folds: int = 1,
+                      rotation: int = 0)
+</pre>
+
+<ul>
+  <li> 
+Returns numpy arrays: ins_training, outs_training, ins_validation,
+outs_validation, ins_testing, outs_testing
+       <p>
+  </p></li><li> Each fold contains different Mesonet stations
+       <p>
+
+</p></li></ul>
+
+</li><li> <b>Extracting Data for a Specific Station</b>
+
+     <b>
+<pre>     extract_station_timeseries(ins:np.array, outs:np.array,
+                                nstations:int, station_index:int)
+</pre>
+     <ul>
+       <li> Takes as input a dataset containing multiple stations, and a specific index for a station for which to retrieve the data.
+<p>
+       </p></li><li> Returns the ins/outs for that one station (in temporal order)
+<p>
+	    
+     </p></li></ul>
+     </b>
+
+</li><li> <b>Sinh-Arcsinh Distribution Implementation</b>
+<p>
+
+The <b>SinhArcsinh</b> class provides three key class methods:
+
+</p><ul>
+  <li> <b>num_params()</b> returns the number of parameters required
+       for this distribution.  Each parameter will require one Tensor
+       (one each for mean, standard deviation, skewness, and
+       tailweight).
+       <p>
+       
+  </p></li><li> <b>create_layer()</b> returns a proper Keras 3 Layer.  This layer
+       is callable with a sequence of 4 Keras Tensors.  The
+       implementation assumes that standard deviation and tailweight
+       are only positive.  When passed TF Tensor data, the layer returns Tensorflow
+       Probability Distributions (not TF Tensors)
+       <p>
+
+  </p></li><li> <b>mdn_loss(y, dist)</b> Can be used as a loss function for the
+       purposes of compiling your outer model.  It returns the negative log
+       likelihood for each true value (y) given the parameterized
+       distribution (dist).
+       <p>
+
+</p></li></ul>
+
+</li><li> <b>Probabilistic Neural Networks Demo:</b> pnn-solution.ipynb
+     <p>
+     </p><ul>
+       <li> Synthetic data
+	    <p>
+
+       </p></li><li> Normal distribution
+	    <p>
+
+     </p></li></ul>
+
+</li></ul>
+
+
+<h2>Deep Learning Experiment</h2>
+
+Construct a model that takes as input the daily summary data from a single mesonet 
+station (a row in ins_*) and predicts a distribution of likely
+rainfall measurements, conditioned on the station data (a row in
+outs_*).  Use the inner/outer model design, with the inner model
+transforming the daily summary station data into a set of parameters for a
+<b>Sinh-Arcsinh</b> distribution, and the outer model producing as
+output the corresponding distribution.  
+
+<p>
+
+Model specifics:
+</p><ul>
+  <li> The <b>Sinh-Arcsinh</b> distribution has four input parameters:
+       mean, standard deviation, skewness and tailweight.  Each of
+       these parameters is actually a vector -- one element for each
+       input example (specifically, these parameter values are
+       conditioned on the mesonet station data).
+       <p>
+       
+  </p></li><li> The standard deviation and tailweight must be strictly positive.
+       Your inner model must enforce this (the standard is to use the
+       softplus non-linearity).  The other two parameters are unbounded.
+       <p>
+
+  </p></li><li> Use negative log likelihood as the loss function.
+       <p>
+       
+  </p></li><li> Make sure to allocate an appropriate set of hidden layers (and
+       hidden layer sizes) for your inner model.
+       <p>
+
+
+</p></li></ul>
+
+
+
+<h2>Performance Reporting</h2>
+
+Once you have selected a reasonable architecture and set of
+hyper-parameters, perform <b>eight</b> rotations of experiments.  Produce the
+following figures/results: 
+
+<ol>
+  <li> Figure 0: Inner network architecture from plot_model().
+       <p>
+
+  </p></li><li> Figures 1a,b: Training and validation set negative likelihood
+       as a function of epoch for each rotation (each figure has <b>eight</b>
+       curves).
+       <p>
+
+  </p></li><li> Figure 2: Several time-series examples from a test data
+       set. Show observed precipitation, and curves for 
+       distribution mean, and the 10, 25, 75, and 90th distribution percentiles.
+       Make sure to pick interesting time periods.
+       <p>
+
+  </p></li><li> Figures 3a,b,c,d: Combining the test data for all <b>eight</b> rotations, show a
+       scatter plot of predicted mean, standard deviation, skewness,
+       and tailweight as a function of observed precipitation.
+       <p>
+       
+  </p></li><li> Figure 4: For each rotation, compute the <b>mean absolute difference</b> between
+       observed precipitation, and both the median and mean predicted precipitation.
+       Show these MADs using a bar plot with twelve bars.  Organize logically.
+       <p>
+
+  </p></li><li> Reflection:
+       <ol>
+	 <li> Discuss in detail how consistent your model performance
+	      is across the different rotations.
+	      <p>
+
+	 </p></li><li> Given the time-series plots, describe and explain the
+	      shape of the pdf and how it changes with time.
+	      <p>
+
+	 </p></li><li> Discuss how skewness is used by the model.  Is there a
+	      consistent variation in this distribution parameter?
+	      <p>
+	      
+	 </p></li><li> Discuss how tailweight is used by the model.  Is there a
+	      consistent variation in this distribution parameter?
+	      <p>
+	      
+	 </p></li><li> Is Sinh-Arcsinh an appropriate distribution for modeling
+	      this particular phenomena?  Why or why not?  (answer in detail)
+	      <p>
+
+	 </p></li><li> <b>Are your models doing a good job at predicting precipitation?  Justify your answer.</b>
+	      <p>
+
+	      
+       </p></li></ol>
+</li></ol>
+
+
+<p></p><hr><p>
+
+
+
+</p><h2>Hints</h2>
+
+
+<ul>
+  <li> You should be working from the structure of the PNN demo code
+       that we released this week (inner/outer model design, with the
+       outer model returning a probability distribution).
+       <p>
+       
+  </p></li><li> model_outer.predict(...) will return a sequence of samples from the
+       learned distribution (one sample per example in the input,
+       conditioned on the corresponding input).  
+       <p>
+
+  </p></li><li> model_outer(...) will return a sequence of distributions (one
+       distribution per example in the input, also conditioned on the
+       inputs).
+       <p>
+       
+  </p></li><li> The range of the input variables varies dramatically depending
+       on the variable itself.  Make sure to add a batch normalization step
+       between your inputs and your first hidden layer.  You might
+       also see some benefit to batch normalization at other stages of
+       your network, or by using kernel initializations that limit the
+       magnitude of your initial parameters (but don't set your weights
+       to zeros).
+       <p>
+       
+  </p></li><li> Be patient with your training.  You can gain a lot from this.
+       <p>
+       
+  </p></li><li> See the <a href="https://www.tensorflow.org/probability/api_docs/python/tfp/distributions/SinhArcsinh">SinhArcsinh distribution documentation</a> for things you can do with parameterized distributions (useful for creating some of the figures).
+       <p>
+
+  </p></li><li> Remember that Tensorflow Probability is very sensitive to the
+       specific combination of package versions that are available in
+       the dnn environment.
+       <p>
+  </p></li><li> You won't need to use a GPU for this assignment.
+
+</li></ul>
+
+
+<p></p><hr><p>
+
+
+
+
+</p><h2>What to Hand In</h2>
+
+Turn in a single zip file that contains:
+
+<ul>
+  <li> All of your python code (.py) and any notebook files (.ipynb)
+  </li><li> Figures 0-4
+  </li><li> Reflection
+</li></ul>
+
+<p>
+
+Do not turn in pickle files.
+
+
+</p><h2>Grading</h2>
+<ul>
+  <li> 10 pts: Clean, general code for model building (including
+       in-code documentation) 
+  </li><li> 10 pts: Figure 0
+  </li><li> 10 pts: Figure 1
+  </li><li> 10 pts: Figure 2
+  </li><li> 10 pts: Figure 3
+  </li><li> 10 pts: Figure 4
+  </li><li> 15 pts: Reasonable test set performance for all rotations.
+  </li><li> 25 pts: Reflection
+  </li><li> <b>Bonus 5 pts: Compute the MADs in a metric function that is
+       declared in model.compile() and called for every epoch</b>
+</li></ul>
+
+
+<p></p><hr><p>
+<em><a href="http://symbiotic-computing.org/fagg_html">andrewhfagg -- gmail.com</a></em></p><p>
+
+<font size="-2">
+<!-- hhmts start -->
+Last modified: Wed Apr  2 23:03:39 2025
+<!-- hhmts end -->
+</font>
+
+
+</p></body></html>

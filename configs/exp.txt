@@ -1,0 +1,9 @@
+--dataset=/home/fagg/datasets/radiant_earth/pa
+--Ntraining=6
+--patience=200
+--batch=64
+--min_delta=0.01
+--no_use_py_func
+--project=HW5
+--epochs=2000
+--steps_per_epoch=100
