@@ -1,10 +1,9 @@
 from mesonet_support import SinhArcsinh
-import tf_keras as keras
-from tf_keras.models import Model
-from tf_keras.layers import Input, Dense, BatchNormalization, Concatenate
-from keras.optimizers import Adam
 
-from mesonet_support import SinhArcsinh
+from tf_keras.layers import Concatenate
+from tf_keras.layers import Dense, BatchNormalization
+from tf_keras import Input, Model
+from tf_keras.optimizers import Adam
 
 def create_inner_model(input_dim, hidden_layers=[128, 64]):
     inputs = Input(shape=(input_dim,))
