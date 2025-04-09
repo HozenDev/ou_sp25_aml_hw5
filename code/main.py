@@ -35,7 +35,6 @@ if cpus_per_task > 1:
 # Keras
 import keras
 from keras.utils import plot_model
-from tf.keras.optimizers import Adam
 
 # WandB
 import wandb
