@@ -11,7 +11,7 @@ Semantic labeling of the Chesapeake Bay
 #                           Imports                             #
 #################################################################
 
-from mesonet_support import get_mesonet_folds, extract_station_timeseries, SinhArcsinh
+from mesonet_support import get_mesonet_folds
 import tensorflow as tf
 
 # Gpus initialization
@@ -199,15 +199,16 @@ def execute_exp(args, multi_gpus:int=1):
     dist = outer_model(test_x) # Predict the distribution
 
     # Extract stats
-    pred_mean = dist.mean().numpy().flatten()
-    pred_std = dist.stddev().numpy().flatten()
-    pred_skew = dist.skewness().numpy().flatten()
-    pred_tail = dist.tailweight().numpy().flatten()
-    pred_p10 = dist.quantile(0.10).numpy().flatten()
-    pred_p25 = dist.quantile(0.25).numpy().flatten()
-    pred_p75 = dist.quantile(0.75).numpy().flatten()
-    pred_p90 = dist.quantile(0.90).numpy().flatten()
-    pred_median = dist.quantile(0.5).numpy().flatten()
+    samples = dist.sample(1000).numpy().squeeze()  # shape: (1000, batch)
+
+    pred_mean = np.mean(samples, axis=0)
+    pred_median = np.percentile(samples, 50, axis=0)
+    pred_std = np.std(samples, axis=0)
+    pred_p10 = np.percentile(samples, 10, axis=0)
+    pred_p25 = np.percentile(samples, 25, axis=0)
+    pred_p75 = np.percentile(samples, 75, axis=0)
+    pred_p90 = np.percentile(samples, 90, axis=0)
+    pred_median = np.percentile(samples, 50, axis=0)
     y_true = test_y.flatten()
     mad_mean = np.mean(np.abs(y_true - pred_mean))
     mad_median = np.mean(np.abs(y_true - pred_median))
@@ -228,8 +229,6 @@ def execute_exp(args, multi_gpus:int=1):
         'pred_mean': pred_mean,
         'pred_median': pred_median,
         'pred_std': pred_std,
-        'pred_skew': pred_skew,
-        'pred_tail': pred_tail,
         'percentile_10': pred_p10,
         'percentile_25': pred_p25,
         'percentile_75': pred_p75,
