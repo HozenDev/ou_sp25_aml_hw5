@@ -134,7 +134,7 @@ def execute_exp(args, multi_gpus:int=1):
                                                           n_hidden=args.hidden,
                                                           n_output=n_output,
                                                           activation=args.activation_dense,
-                                                          activation_out=['linear', 'softplus', 'linear', 'softplus'],
+                                                          activation_out=['linear', 'softplus', 'tanh', 'softplus'],
                                                           dropout=None)
 
     model_inner = Model(inputs=input_tensor, outputs=output_tensors)

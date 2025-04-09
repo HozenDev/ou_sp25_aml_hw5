@@ -3,6 +3,6 @@
 64
 32
 16
---activation_dense=elu
+--activation_dense=tanh
 --lrate=.00005
 --label=Net_2H
