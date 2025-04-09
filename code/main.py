@@ -125,32 +125,25 @@ def execute_exp(args, multi_gpus:int=1):
         print('Building network')
 
     n_inputs = train_x.shape[1]
-    d_output = train_y.shape[1]
-    n_gaussians = 2
+    d_output = 1
 
-    n_outputs = tfpl.MixtureNormal.params_size(num_components=n_gaussians, 
-                                               event_shape=d_output)
-    
     # Main model stack
-    input_tensor, output_tensors  = fully_connected_stack(n_inputs=n_inputs, 
-                                                          n_hidden=[1000,100, 50, 20], 
-                                                          n_output=[n_outputs],
-                                                          activation='elu',
-                                                          activation_out=['linear'],
+    input_tensor, output_tensors  = fully_connected_stack(n_inputs=n_inputs,
+                                                          n_hidden=args.hidden,
+                                                          n_output=[d_output, d_output, d_output, d_output],
+                                                          activation=args.activation_dense,
+                                                          activation_out=['linear', 'softplus', 'linear', 'softplus'],
                                                           dropout=None)
 
     model_inner = Model(inputs=input_tensor, outputs=output_tensors)
 
-    tensor = input_tensor2 = Input(shape=(n_inputs,))
-    output_tensors2 = model_inner(tensor)
+    # Outer model
 
-    # This layer takes a Keras Tensor as input and returns a TF Probability Distribution
-    #  It also handles the constraint that std must be positive
-    #  NOTE: this only workks right now when using Keras 2
-    output2 = tfpl.MixtureNormal(num_components=n_gaussians, 
-                                 event_shape=d_output)(output_tensors2)
-
-    model_outer = Model(inputs=input_tensor2, outputs=output2)
+    inputs = model_inner.input
+    param_vector = model_inner(inputs)
+    dist = SinhArcsinh.create_layer()(param_vector)
+    
+    model_outer = Model(inputs=inputs, outputs=dist, name='outer_model')
 
     # Optimizer
     opt = keras.optimizers.Adam(learning_rate=0.0001, amsgrad=False)
