@@ -31,4 +31,4 @@ def create_outer_model(inner_model, lrate):
         loss=SinhArcsinh.mdn_loss
     )
     
-    return 
+    return outer_model
