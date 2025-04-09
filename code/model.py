@@ -57,6 +57,7 @@ def fully_connected_stack(n_inputs,
     for i, n in enumerate(n_hidden):             
         tensor = Dense(n, use_bias=True, name="hidden_%02d"%(i), activation=activation,
                  kernel_regularizer=kernel_regularizer)(tensor)
+        tensor = BatchNormalization()(tensor)
         
         if dropout is not None:
             tensor = Dropout(rate=dropout, name="dropout_%02d"%(i))(tensor)

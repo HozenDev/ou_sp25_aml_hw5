@@ -4,5 +4,5 @@
 32
 16
 --activation_dense=elu
---lrate=.0001
+--lrate=.00005
 --label=Net_2H

@@ -1,9 +1,9 @@
 --dataset=/home/fagg/datasets/mesonet/allData1994_2000.csv
 --Nfolds=8
 --Ntraining=6
---patience=400
---batch=32
+--patience=100
+--batch=16
 --min_delta=0.01
 --no_use_py_func
 --project=HW5
---epochs=2000
+--epochs=1000

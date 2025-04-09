@@ -44,7 +44,7 @@ tfpl = tfp.layers
 # Keras
 import tf_keras as keras
 from tf_keras.utils import plot_model
-from tf_keras.callbacks import EarlyStopping
+from tf_keras.callbacks import EarlyStopping, TerminateOnNaN
 
 # WandB
 import wandb
@@ -148,10 +148,8 @@ def execute_exp(args, multi_gpus:int=1):
     model_outer = Model(inputs=inputs, outputs=dist, name='outer_model')
 
     # Optimizer
-    opt = keras.optimizers.Adam(learning_rate=1e-4, clipnorm=1.0, amsgrad=False)
+    opt = keras.optimizers.Adam(learning_rate=args.lrate, clipnorm=1.0, amsgrad=False)
 
-    # We don't have to use a built-in loss function.  Instead, we use the
-    #   one defined above
     model_outer.compile(optimizer=opt, loss=SinhArcsinh.mdn_loss)
             
     # Report model structure if verbosity is turned on
@@ -200,10 +198,12 @@ def execute_exp(args, multi_gpus:int=1):
     
     cbs = []
     early_stopping_cb = EarlyStopping(patience=args.patience,
-                                                      restore_best_weights=True,
-                                                      min_delta=args.min_delta,
-                                                      monitor=args.monitor)
+                                      restore_best_weights=True,
+                                      min_delta=args.min_delta,
+                                      monitor=args.monitor)
+
     cbs.append(early_stopping_cb)
+    cbs.append(TerminateOnNaN())
 
     # Weights and Biases
     wandb_metrics_cb = wandb.keras.WandbCallback()
