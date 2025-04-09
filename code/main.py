@@ -197,7 +197,7 @@ def execute_exp(args, multi_gpus:int=1):
     #################################
 
     # Predict TFP distributions from model directly
-    dist = outer_model(x_test, training=False)
+    dist = outer_model(test_x, training=False)
 
     # Sample from distribution to estimate percentiles and stats
     samples = dist.sample(1000).numpy()  # (1000, batch, 1)
