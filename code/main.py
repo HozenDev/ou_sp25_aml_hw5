@@ -35,7 +35,7 @@ if cpus_per_task > 1:
 # Keras
 import keras
 from keras.utils import plot_model
-from keras.optimizers import Adam
+from tf.keras.optimizers import Adam
 
 # WandB
 import wandb
@@ -117,12 +117,8 @@ def execute_exp(args, multi_gpus:int=1):
 
     input_dim = train_x.shape[1]
     inner_model = create_inner_model(input_dim=input_dim, hidden_layers=args.hidden)
-    outer_model = create_outer_model(inner_model)
-
-    outer_model.compile(
-        optimizer=Adam(learning_rate=args.lrate),
-        loss=SinhArcsinh.mdn_loss
-    )
+    outer_model = create_outer_model(inner_model,
+                                     args.lrate)
             
     # Report model structure if verbosity is turned on
     if args.verbose >= 1:
