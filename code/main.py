@@ -32,6 +32,15 @@ if cpus_per_task > 1:
     tf.config.threading.set_intra_op_parallelism_threads(cpus_per_task // 2)
     tf.config.threading.set_inter_op_parallelism_threads(cpus_per_task // 2)
 
+# Tensorflow
+import tensorflow_probability as tfp
+
+# Sub namespaces that are useful later
+# Tensorflow Distributions
+tfd = tfp.distributions
+# Probability Layers 
+tfpl = tfp.layers
+
 # Keras
 import tf_keras as keras
 from tf_keras.utils import plot_model
@@ -50,7 +59,7 @@ import numpy as np
 from job_control import JobIterator
 from parser import *
 from tools import *
-from model import create_inner_model, create_outer_model
+from model import *
 
 #################################################################
 #                 Default plotting parameters                   #
@@ -115,14 +124,44 @@ def execute_exp(args, multi_gpus:int=1):
     if args.verbose >= 3:
         print('Building network')
 
-    input_dim = train_x.shape[1]
-    inner_model = create_inner_model(input_dim=input_dim, hidden_layers=args.hidden)
-    outer_model = create_outer_model(inner_model,
-                                     args.lrate)
+    n_inputs = train_x.shape[1]
+    d_output = train_y.shape[1]
+    n_gaussians = 2
+
+    n_outputs = tfpl.MixtureNormal.params_size(num_components=n_gaussians, 
+                                               event_shape=d_output)
+    
+    # Main model stack
+    input_tensor, output_tensors  = fully_connected_stack(n_inputs=n_inputs, 
+                                                          n_hidden=[1000,100, 50, 20], 
+                                                          n_output=[n_outputs],
+                                                          activation='elu',
+                                                          activation_out=['linear'],
+                                                          dropout=None)
+
+    model_inner = Model(inputs=input_tensor, outputs=output_tensors)
+
+    tensor = input_tensor2 = Input(shape=(n_inputs,))
+    output_tensors2 = model_inner(tensor)
+
+    # This layer takes a Keras Tensor as input and returns a TF Probability Distribution
+    #  It also handles the constraint that std must be positive
+    #  NOTE: this only workks right now when using Keras 2
+    output2 = tfpl.MixtureNormal(num_components=n_gaussians, 
+                                 event_shape=d_output)(output_tensors2)
+
+    model_outer = Model(inputs=input_tensor2, outputs=output2)
+
+    # Optimizer
+    opt = keras.optimizers.Adam(learning_rate=0.0001, amsgrad=False)
+
+    # We don't have to use a built-in loss function.  Instead, we use the
+    #   one defined above
+    model_outer.compile(optimizer=opt, loss=SinhArcsinh.mdn_loss)
             
     # Report model structure if verbosity is turned on
     if args.verbose >= 1:
-        print(inner_model.summary())
+        print(model_inner.summary())
 
     # Output file base and pkl file
     fbase = generate_fname(args, args_str)
@@ -131,7 +170,7 @@ def execute_exp(args, multi_gpus:int=1):
     # Plot the model
     render_fname = '%s_model_plot.png'%fbase
     if args.render:
-        plot_model(inner_model, to_file=render_fname, show_shapes=True, show_layer_names=True)
+        plot_model(model_inner, to_file=render_fname, show_shapes=True, show_layer_names=True)
 
     # Perform the experiment?
     if args.nogo:
@@ -182,7 +221,7 @@ def execute_exp(args, multi_gpus:int=1):
     #  steps_per_epoch: how many batches from the training set do we use for training in one epoch?
     #          Note that if you use this, then you must repeat the training set
     #  validation_steps=None means that ALL validation samples will be used
-    history = outer_model.fit(train_x,
+    history = model_outer.fit(train_x,
                               train_y,
                               validation_data=(valid_x, valid_y),
                               epochs=args.epochs,
@@ -197,38 +236,38 @@ def execute_exp(args, multi_gpus:int=1):
     #################################
 
     # Predict TFP distributions from model directly
-    dist = outer_model(test_x, training=False)
+    # One parameterized dist for every element in t
+    dists = model_outer(test_x)
 
-    # Sample from distribution to estimate percentiles and stats
-    samples = dist.sample(1000).numpy()  # (1000, batch, 1)
-    samples = samples[..., 0]            # (1000, batch)
+    # Extract the logits and convert into weights
+    logits = dists.tensor_distribution.mixture_distribution.logits.numpy() 
+    prob = tf.nn.softmax(logits)
 
-    # Sample-based stats
-    pred_mean_sample = np.mean(samples, axis=0)
-    pred_median = np.percentile(samples, 50, axis=0)
-    pred_std_sample = np.std(samples, axis=0)
-    pred_p10 = np.percentile(samples, 10, axis=0)
-    pred_p25 = np.percentile(samples, 25, axis=0)
-    pred_p75 = np.percentile(samples, 75, axis=0)
-    pred_p90 = np.percentile(samples, 90, axis=0)
+    mu = dists.tensor_distribution.components_distribution.tensor_distribution.mean().numpy() 
+    std = dists.tensor_distribution.components_distribution.tensor_distribution.stddev().numpy()
+    skew = dists.tensor_distribution.components_distribution.tensor_distribution.skewness().numpy()
+    tail = dists.tensor_distribution.components_distribution.tensor_distribution.tailweight().numpy()
 
-    # Raw predicted distribution parameters (these are the actual learned outputs)
-    param_tensor = inner_model(test_x, training=False).numpy()  # shape (batch, 4)
-    pred_mu = param_tensor[:, 0]
-    pred_std = param_tensor[:, 1]
-    pred_skew = param_tensor[:, 2]
-    pred_tail = param_tensor[:, 3]
+    pred_mu = np.mean(mu, axis=1)
+    pred_std = np.mean(std, axis=1)
+    pred_tail = np.mean(tail, axis=1)
+    pred_skew = np.mean(skew, axis=1)
 
-    # Ground truth
-    y_true = test_y.flatten()
+    pred_p10 = np.percentile(mu, 10, axis=1)
+    pred_p25 = np.percentile(mu, 25, axis=1)
+    pred_p75 = np.percentile(mu, 75, axis=1)
+    pred_p90 = np.percentile(mu, 90, axis=1)
 
-    # MADs
-    mad_mean = np.mean(np.abs(y_true - pred_mean_sample))
-    mad_median = np.mean(np.abs(y_true - pred_median))
+    mad_mean = np.mean(std, axis=1)
+    mad_median = np.median(std, axis=1)
+    mad_zero = np.mean(np.abs(std), axis=1)
+
+    y_true = test_y.numpy().flatten()
 
     wandb.log({
         "MAD Mean": mad_mean,
         "MAD Median": mad_median,
+        "MAD Zero": mad_zero,
         "Final Training Loss": history.history["loss"][-1],
         "Final Validation Loss": history.history["val_loss"][-1]
     })
@@ -243,15 +282,13 @@ def execute_exp(args, multi_gpus:int=1):
         'pred_std': pred_std,
         'pred_skew': pred_skew,
         'pred_tail': pred_tail,
-        'pred_mean': pred_mean_sample,
-        'pred_median': pred_median,
-        'pred_std_sample': pred_std_sample,
         'percentile_10': pred_p10,
         'percentile_25': pred_p25,
         'percentile_75': pred_p75,
         'percentile_90': pred_p90,
         'mad_mean': mad_mean,
-        'mad_median': mad_median
+        'mad_median': mad_median,
+        'mad_zero': mad_zero
     }
 
     # Save results
