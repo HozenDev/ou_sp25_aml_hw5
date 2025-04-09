@@ -35,6 +35,7 @@ if cpus_per_task > 1:
 # Keras
 import keras
 from keras.utils import plot_model
+from keras.optimizers import Adam
 
 # WandB
 import wandb
@@ -119,7 +120,7 @@ def execute_exp(args, multi_gpus:int=1):
     outer_model = create_outer_model(inner_model)
 
     outer_model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=args.lrate),
+        optimizer=Adam(learning_rate=args.lrate),
         loss=SinhArcsinh.mdn_loss
     )
             
