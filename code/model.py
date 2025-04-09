@@ -1,6 +1,6 @@
 from mesonet_support import SinhArcsinh
 
-from tf_keras.layers import Dense, BatchNormalization, Concatenate, Lambda, Dropout
+from tf_keras.layers import Dense, BatchNormalization, Concatenate, Lambda, Dropout, Activation
 from tf_keras import Input, Model
 from tf_keras.optimizers import Adam
 from tf_keras.regularizers import l1, l2
@@ -65,6 +65,13 @@ def fully_connected_stack(n_inputs,
     outputs = []
     for i, (n, act) in enumerate(zip(n_output, activation_out)):
         o = Dense(n, use_bias=True, name="output%d"%i, activation=act)(tensor)
+
+        if act == 'softplus':
+            o = Activation('softplus')(o)
+            o = Lambda(lambda x: x + 1e-3)(o)  # ensure positivity and numerical safety
+        else:
+            o = Activation(act)(o)
+            
         outputs.append(o)
 
     return input_tensor, outputs

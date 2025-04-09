@@ -127,10 +127,12 @@ def execute_exp(args, multi_gpus:int=1):
     n_inputs = train_x.shape[1]
     d_output = 1
 
+    n_output = [d_output for _ in range(SinhArcsinh.num_params())]
+
     # Main model stack
     input_tensor, output_tensors  = fully_connected_stack(n_inputs=n_inputs,
                                                           n_hidden=args.hidden,
-                                                          n_output=[d_output, d_output, d_output, d_output],
+                                                          n_output=n_output,
                                                           activation=args.activation_dense,
                                                           activation_out=['linear', 'softplus', 'linear', 'softplus'],
                                                           dropout=None)
@@ -146,7 +148,7 @@ def execute_exp(args, multi_gpus:int=1):
     model_outer = Model(inputs=inputs, outputs=dist, name='outer_model')
 
     # Optimizer
-    opt = keras.optimizers.Adam(learning_rate=0.0001, amsgrad=False)
+    opt = keras.optimizers.Adam(learning_rate=1e-4, clipnorm=1.0, amsgrad=False)
 
     # We don't have to use a built-in loss function.  Instead, we use the
     #   one defined above
@@ -161,9 +163,11 @@ def execute_exp(args, multi_gpus:int=1):
     fname_out = "%s_results.pkl"%fbase
 
     # Plot the model
-    render_fname = '%s_model_plot.png'%fbase
+    outer_render_fname = '%s_outer_model_plot.png'%fbase
+    inner_render_fname = '%s_inner_model_plot.png'%fbase
     if args.render:
-        plot_model(model_inner, to_file=render_fname, show_shapes=True, show_layer_names=True)
+        plot_model(model_inner, to_file=inner_render_fname, show_shapes=True, show_layer_names=True)
+        plot_model(model_outer, to_file=outer_render_fname, show_shapes=True, show_layer_names=True)
 
     # Perform the experiment?
     if args.nogo:
@@ -187,7 +191,8 @@ def execute_exp(args, multi_gpus:int=1):
 
     # Log model design image
     if args.render:
-        wandb.log({'model architecture': wandb.Image(render_fname)})
+        wandb.log({'Inner model architecture': wandb.Image(inner_render_fname)})
+        wandb.log({'Outer model architecture': wandb.Image(outer_render_fname)})
             
     #################################
     #            Callbacks          #
@@ -292,11 +297,11 @@ def execute_exp(args, multi_gpus:int=1):
     
     # Save model
     if args.save_model:
-        inner_model.save("%s_model.keras"%(fbase))
+        model_inner.save("%s_model.keras"%(fbase))
 
     wandb.finish()
 
-    return inner_model
+    return model_inner
 
 
 def check_completeness(args):
