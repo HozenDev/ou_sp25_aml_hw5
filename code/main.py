@@ -196,7 +196,7 @@ def execute_exp(args, multi_gpus:int=1):
     #            Results            #
     #################################
 
-    dist = outer_model.predict(test_x) # Predict the distribution
+    dist = outer_model(test_x) # Predict the distribution
 
     # Extract stats
     pred_mean = dist.mean().numpy().flatten()
