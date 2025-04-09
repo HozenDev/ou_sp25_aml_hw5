@@ -196,21 +196,34 @@ def execute_exp(args, multi_gpus:int=1):
     #            Results            #
     #################################
 
-    dist = outer_model(test_x) # Predict the distribution
+    # Predict TFP distributions from model directly
+    dist = outer_model(x_test, training=False)
 
-    # Extract stats
-    samples = dist.sample(1000).numpy().squeeze()  # shape: (1000, batch)
+    # Sample from distribution to estimate percentiles and stats
+    samples = dist.sample(1000).numpy()  # (1000, batch, 1)
+    samples = samples[..., 0]            # (1000, batch)
 
-    pred_mean = np.mean(samples, axis=0)
+    # Sample-based stats
+    pred_mean_sample = np.mean(samples, axis=0)
     pred_median = np.percentile(samples, 50, axis=0)
-    pred_std = np.std(samples, axis=0)
+    pred_std_sample = np.std(samples, axis=0)
     pred_p10 = np.percentile(samples, 10, axis=0)
     pred_p25 = np.percentile(samples, 25, axis=0)
     pred_p75 = np.percentile(samples, 75, axis=0)
     pred_p90 = np.percentile(samples, 90, axis=0)
-    pred_median = np.percentile(samples, 50, axis=0)
+
+    # Raw predicted distribution parameters (these are the actual learned outputs)
+    param_tensor = inner_model(test_x, training=False).numpy()  # shape (batch, 4)
+    pred_mu = param_tensor[:, 0]
+    pred_std = param_tensor[:, 1]
+    pred_skew = param_tensor[:, 2]
+    pred_tail = param_tensor[:, 3]
+
+    # Ground truth
     y_true = test_y.flatten()
-    mad_mean = np.mean(np.abs(y_true - pred_mean))
+
+    # MADs
+    mad_mean = np.mean(np.abs(y_true - pred_mean_sample))
     mad_median = np.mean(np.abs(y_true - pred_median))
 
     wandb.log({
@@ -226,9 +239,13 @@ def execute_exp(args, multi_gpus:int=1):
         'args': args,
         'history': history.history,
         'y_true': y_true,
-        'pred_mean': pred_mean,
-        'pred_median': pred_median,
+        'pred_mu': pred_mu,
         'pred_std': pred_std,
+        'pred_skew': pred_skew,
+        'pred_tail': pred_tail,
+        'pred_mean': pred_mean_sample,
+        'pred_median': pred_median,
+        'pred_std_sample': pred_std_sample,
         'percentile_10': pred_p10,
         'percentile_25': pred_p25,
         'percentile_75': pred_p75,
