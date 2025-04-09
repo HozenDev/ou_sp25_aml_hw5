@@ -33,8 +33,9 @@ if cpus_per_task > 1:
     tf.config.threading.set_inter_op_parallelism_threads(cpus_per_task // 2)
 
 # Keras
-import keras
-from keras.utils import plot_model
+import tf_keras as keras
+from tf_keras.utils import plot_model
+from tf_keras.callbacks import EarlyStopping
 
 # WandB
 import wandb
@@ -161,7 +162,7 @@ def execute_exp(args, multi_gpus:int=1):
     #################################
     
     cbs = []
-    early_stopping_cb = keras.callbacks.EarlyStopping(patience=args.patience,
+    early_stopping_cb = EarlyStopping(patience=args.patience,
                                                       restore_best_weights=True,
                                                       min_delta=args.min_delta,
                                                       monitor=args.monitor)
