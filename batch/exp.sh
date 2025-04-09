@@ -3,10 +3,10 @@
 #SBATCH --partition=normal
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=40
-#SBATCH --mem=30G
+#SBATCH --mem=1G
 #SBATCH --output=results/exp/%j_stdout.txt
 #SBATCH --error=results/exp/%j_stderr.txt
-#SBATCH --time=02:00:00
+#SBATCH --time=00:10:00
 #SBATCH --job-name=exp
 #SBATCH --mail-user=Enzo.B.Durel-1@ou.edu
 #SBATCH --mail-type=ALL
