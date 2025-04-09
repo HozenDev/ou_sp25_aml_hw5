@@ -6,7 +6,7 @@
 #SBATCH --mem=1G
 #SBATCH --output=results/exp/%j_stdout.txt
 #SBATCH --error=results/exp/%j_stderr.txt
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #SBATCH --job-name=exp
 #SBATCH --mail-user=Enzo.B.Durel-1@ou.edu
 #SBATCH --mail-type=ALL
