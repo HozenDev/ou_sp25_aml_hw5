@@ -1,9 +1,8 @@
 #!/bin/bash
 #
-#SBATCH --partition=gpu_a100
-#SBATCH -x c860
-#SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=64
+#SBATCH --partition=normal
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=40
 #SBATCH --mem=30G
 #SBATCH --output=results/exp/%j_stdout.txt
 #SBATCH --error=results/exp/%j_stderr.txt
@@ -23,7 +22,7 @@ CODE_DIR=code
 CONFIG_DIR=configs
 
 ## SHALLOW
-python @${CODE_DIR}/main.py \
+python ${CODE_DIR}/main.py \
        @${CONFIG_DIR}/exp.txt @${CONFIG_DIR}/oscer.txt @${CONFIG_DIR}/net.txt \
        --exp_index $SLURM_ARRAY_TASK_ID \
        --cpus_per_task $SLURM_CPUS_PER_TASK \
