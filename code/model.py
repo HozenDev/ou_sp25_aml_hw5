@@ -1,6 +1,6 @@
 from mesonet_support import SinhArcsinh
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense, BatchNormalization
+from keras import Model
+from keras.layers import Input, Dense, BatchNormalization, Concatenate
 
 def create_inner_model(input_dim, hidden_layers=[128, 64]):
     inputs = Input(shape=(input_dim,))
@@ -18,6 +18,7 @@ def create_inner_model(input_dim, hidden_layers=[128, 64]):
 
 def create_outer_model(inner_model):
     inputs = inner_model.input
-    dist_params = inner_model(inputs)
-    dist = SinhArcsinh.create_layer()(dist_params)
+    params = inner_model(inputs)  # list of tensors
+    param_vector = Concatenate()(params)  # shape (batch_size, 4)
+    dist = SinhArcsinh.create_layer()(param_vector)
     return Model(inputs=inputs, outputs=dist, name="outer_model")

@@ -145,11 +145,13 @@ class SinhArcsinh():
         - This method is only called when the wrapping lambda distribution is
             called (i.e., when the params are proper TF Tensors)
         '''
+        mu, std, skew, tail = tf.split(param_vector, num_or_size_splits=4, axis=-1)
+
         return tfd.SinhArcsinh(
-            loc=params[0],
-            scale=params[1],
-            skewness=params[2],
-            tailweight=params[3], 
+            loc=mu,
+            scale=std,
+            skewness=skew,
+            tailweight=tail
         )
 
     # Custom loss function
