@@ -27,5 +27,5 @@ python ${CODE_DIR}/main.py \
        --exp_index $SLURM_ARRAY_TASK_ID \
        --cpus_per_task $SLURM_CPUS_PER_TASK \
        --save_model --render --cache "" \
-       --results_dir "./results/exp/" \
+       --results_path "./results/exp/" \
        -vvv
