@@ -1,7 +1,6 @@
-import tensorflow_probability as tfp
 from mesonet_support import SinhArcsinh
-from keras import Input, Model
-from keras.layers import Dense, BatchNormalization
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Dense, BatchNormalization
 
 def create_inner_model(input_dim, hidden_layers=[128, 64]):
     inputs = Input(shape=(input_dim,))
