@@ -7,3 +7,4 @@
 --no_use_py_func
 --project=HW5
 --epochs=1000
+--steps_per_epochs=500

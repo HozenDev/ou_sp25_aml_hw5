@@ -4,5 +4,5 @@
 32
 16
 --activation_dense=tanh
---lrate=.00005
+--lrate=.0001
 --label=Net_2H
