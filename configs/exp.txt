@@ -1,4 +1,5 @@
 --dataset=/home/fagg/datasets/mesonet/allData1994_2000.csv
+--Nfolds=8
 --Ntraining=6
 --patience=200
 --batch=64
