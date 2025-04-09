@@ -6,7 +6,7 @@
 #SBATCH --mem=1G
 #SBATCH --output=results/exp/%j_stdout.txt
 #SBATCH --error=results/exp/%j_stderr.txt
-#SBATCH --time=00:10:00
+#SBATCH --time=01:00:00
 #SBATCH --job-name=exp
 #SBATCH --mail-user=Enzo.B.Durel-1@ou.edu
 #SBATCH --mail-type=ALL
@@ -23,7 +23,7 @@ CONFIG_DIR=configs
 
 ## SHALLOW
 python ${CODE_DIR}/main.py \
-       @${CONFIG_DIR}/exp.txt @${CONFIG_DIR}/oscer.txt @${CONFIG_DIR}/net.txt \
+       @${CONFIG_DIR}/exp.txt @${CONFIG_DIR}/net.txt \
        --exp_index $SLURM_ARRAY_TASK_ID \
        --cpus_per_task $SLURM_CPUS_PER_TASK \
        --save_model --render --cache "" \
