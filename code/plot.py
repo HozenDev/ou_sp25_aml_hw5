@@ -92,7 +92,7 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
     _, p25 = extract_station_timeseries(test_x, res['percentile_25'].reshape(-1, 1), nstations, station_index)
     _, p75 = extract_station_timeseries(test_x, res['percentile_75'].reshape(-1, 1), nstations, station_index)
     _, p90 = extract_station_timeseries(test_x, res['percentile_90'].reshape(-1, 1), nstations, station_index)
-    _, pred_mean = extract_station_timeseries(test_x, res['pred_mu'].reshape(-1, 1), nstations, station_index)
+    _, pred_mean = extract_station_timeseries(test_x, res['mu'].reshape(-1, 1), nstations, station_index)
 
     # Flatten all outputs
     y_true = y_true.flatten()
@@ -103,7 +103,7 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
     p90 = p90.flatten()
 
     plt.figure()
-    plt.plot(y_true, label="True RAIN", color='black')
+    plt.plot(y_true, label="True RAIN", color='black', alpha=0.2)
     plt.plot(pred_mean, label="Predicted Mean", linestyle='--')
     plt.fill_between(range(len(p10)), p10, p90, alpha=0.2, label="10–90%")
     plt.fill_between(range(len(p25)), p25, p75, alpha=0.4, label="25–75%")
@@ -118,10 +118,10 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
 # ------------------------------
 def plot_param_scatter(all_results):
     y_true = np.concatenate([r['y_true'] for r in all_results])
-    pred_mean = np.concatenate([r['pred_mu'] for r in all_results])
-    std = np.concatenate([r['pred_std'] for r in all_results])
-    skew = np.concatenate([r['pred_skew'] for r in all_results])
-    tail = np.concatenate([r['pred_tail'] for r in all_results])
+    pred_mean = np.concatenate([r['mu'] for r in all_results])
+    std = np.concatenate([r['std'] for r in all_results])
+    skew = np.concatenate([r['skew'] for r in all_results])
+    tail = np.concatenate([r['tail'] for r in all_results])
 
     def scatter_plot(x, y, xlabel, ylabel, title, filename):
         plt.figure()
