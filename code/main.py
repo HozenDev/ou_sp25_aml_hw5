@@ -11,7 +11,7 @@ Semantic labeling of the Chesapeake Bay
 #                           Imports                             #
 #################################################################
 
-from mesonet_support import get_mesonet_folds
+from mesonet_support import get_mesonet_folds, WeightedLogLikelihood, WeightedMeanAbsoluteDifferenceMetric
 import tensorflow as tf
 
 # Gpus initialization
@@ -151,7 +151,18 @@ def execute_exp(args, multi_gpus:int=1):
     # Optimizer
     opt = keras.optimizers.Adam(learning_rate=args.lrate, clipnorm=1.0, amsgrad=False)
 
-    model_outer.compile(optimizer=opt, loss=SinhArcsinh.mdn_loss)
+    
+    metrics = [
+        WeightedMeanAbsoluteDifferenceMetric(name="MAD_median"),
+        WeightedMeanAbsoluteDifferenceMetric(name="MAD_mean"),
+        WeightedMeanAbsoluteDifferenceMetric(name="MAD_zero"),
+    ]
+
+
+    # loss_fn = SinhArcsinh.mdn_loss
+    loss_fn = WeightedLogLikelihood()
+    
+    model_outer.compile(optimizer=opt, loss=loss_fn, metrics=metrics)
             
     # Report model structure if verbosity is turned on
     if args.verbose >= 1:
@@ -220,8 +231,12 @@ def execute_exp(args, multi_gpus:int=1):
     #  steps_per_epoch: how many batches from the training set do we use for training in one epoch?
     #          Note that if you use this, then you must repeat the training set
     #  validation_steps=None means that ALL validation samples will be used
+
+    sample_weight = np.where(train_y > 0, 5.0, 1.0)
+    
     history = model_outer.fit(train_x,
                               train_y,
+                              sample_weight=sample_weight,
                               validation_data=(valid_x, valid_y),
                               epochs=args.epochs,
                               batch_size=args.batch,
@@ -242,6 +257,10 @@ def execute_exp(args, multi_gpus:int=1):
     std   = outputs[1].numpy().flatten()
     skew  = outputs[2].numpy().flatten()
     tail  = outputs[3].numpy().flatten()
+
+    # Prevent high mad mean
+    skew = tf.clip_by_value(skew, -2.0, 2.0)
+    tail = tf.clip_by_value(tail, 0.5, 3.0)
 
     pred_mu = np.mean(mu, axis=0)
     pred_std = np.mean(std, axis=0)

@@ -49,6 +49,9 @@ def fully_connected_stack(n_inputs,
 
     # Input layer
     input_tensor = tensor = Input(shape=(n_inputs,))
+
+    # Add a batch normalization after input
+    tensor = BatchNormalization()(tensor)
     
     # Dropout input features?
     if dropout_input is not None:

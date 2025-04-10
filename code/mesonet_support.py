@@ -29,6 +29,8 @@ from tf_keras.layers import Dense, BatchNormalization, Dropout
 from tf_keras import Input, Model
 from matplotlib import colors
 from tf_keras.utils import plot_model
+from tf_keras.losses import Loss
+from tf_keras.metrics import Metric
 
 import pandas as pd
 
@@ -165,4 +167,70 @@ class SinhArcsinh():
         :return: The negative likelihood of each true value
         '''
         return -dist.log_prob(y)
+
+class WeightedLogLikelihood(keras.losses.Loss):
+    def __init__(self, name="weighted_log_likelihood", **kwargs):
+        super().__init__(name=name, **kwargs)
+
+    def call(self, y_true, y_pred, sample_weight=None):
+        n_log_prob = -y_pred.log_prob(y_true)
+
+        if sample_weight is not None:
+            n_log_prob *= tf.cast(sample_weight, n_log_prob.dtype)
+            loss = tf.reduce_sum(n_log_prob) / tf.reduce_sum(sample_weight)
+        else:
+            loss = tf.reduce_mean(n_log_prob)
+
+        return loss
         
+    def get_config(self):
+        
+        #return keras.losses.Loss.get_config(self)
+        return super().get_config()
+        #return {'name': self.name}
+
+class WeightedMeanAbsoluteDifferenceMetric(keras.metrics.Metric):
+    def __init__(self, name:str='MAD_median', **kwargs):
+        super().__init__(name=name, **kwargs)
+        # Graph variables to store temporary results
+        self.total = self.add_weight(name="total", initializer="zeros")
+        self.count = self.add_weight(name="count", initializer="zeros")
+        assert (name in ['MAD_median', 'MAD_mean', 'MAD_zero']), "Metric type must be one of {median, mean, zero}"
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        if self.name == 'MAD_median':
+            error = tf.abs(y_true - y_pred.quantile(.5))
+        elif self.name == 'MAD_mean':
+            error = tf.abs(y_true - y_pred.parameters['loc'])
+        elif self.name == 'MAD_zero':
+            error = tf.abs(y_true)
+
+        if sample_weight is not None:
+            error *= tf.cast(sample_weight, error.dtype)
+            self.total.assign_add(tf.reduce_sum(error))
+            self.count.assign_add(tf.reduce_sum(sample_weight))
+        else:
+            self.total.assign_add(tf.reduce_sum(error))
+            self.count.assign_add(tf.cast(tf.size(y_true), error.dtype))
+
+    def result(self):
+        return self.total / self.count
+
+    def reset_state(self):
+        self.total.assign(0.0)
+        self.count.assign(0.0)
+
+    def get_config(self):
+        config = super().get_config() #keras.metrics.Metric.get_config(self)
+        config.update({'name': self.name})
+        return config
+
+        
+        #return keras.metrics.Metric.get_config(self)
+        
+        #return super().get_config()
+
+
+
+
+
