@@ -104,7 +104,7 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
     p90 = p90.flatten()
 
     plt.figure()
-    plt.plot(y_true, label="True RAIN", color='black', alpha=0.5, style='.')
+    plt.plot(y_true, label="True RAIN", color='black', alpha=0.5)
     plt.plot(pred_mean, label="Predicted Mean", linestyle='--')
     plt.fill_between(range(len(p10)), p10, p90, alpha=0.2, label="10–90%")
     plt.fill_between(range(len(p25)), p25, p75, alpha=0.4, label="25–75%")
