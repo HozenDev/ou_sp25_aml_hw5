@@ -235,16 +235,13 @@ def execute_exp(args, multi_gpus:int=1):
 
     # Predict TFP distributions from model directly
     # One parameterized dist for every element in t
-    dists = model_outer(test_x)
+    params = model_inner(test_x, training=False).numpy()
 
-    # Extract the logits and convert into weights
-    logits = dists.tensor_distribution.mixture_distribution.logits.numpy() 
-    prob = tf.nn.softmax(logits)
-
-    mu = dists.tensor_distribution.components_distribution.tensor_distribution.mean().numpy() 
-    std = dists.tensor_distribution.components_distribution.tensor_distribution.stddev().numpy()
-    skew = dists.tensor_distribution.components_distribution.tensor_distribution.skewness().numpy()
-    tail = dists.tensor_distribution.components_distribution.tensor_distribution.tailweight().numpy()
+    # Unpack parameters
+    mu = params[:, 0]
+    std = tf.nn.softplus(params[:,1])
+    skew = params[:, 2]
+    tail = tf.nn.softplus(params[:,3])
 
     pred_mu = np.mean(mu, axis=1)
     pred_std = np.mean(std, axis=1)

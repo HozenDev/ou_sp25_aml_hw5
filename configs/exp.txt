@@ -1,10 +1,10 @@
 --dataset=/home/fagg/datasets/mesonet/allData1994_2000.csv
 --Nfolds=8
 --Ntraining=6
---patience=50
+--patience=100
 --batch=16
 --min_delta=0.01
 --no_use_py_func
 --project=HW5
---epochs=500
+--epochs=1000
 --steps_per_epoch=500
