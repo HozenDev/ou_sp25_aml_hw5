@@ -237,10 +237,12 @@ def execute_exp(args, multi_gpus:int=1):
     # One parameterized dist for every element in t
     outputs = model_inner(test_x, training=False)  # list of 4 tensors
 
-    mu    = outputs[0].numpy().flatten()
-    std   = outputs[1].numpy().flatten()
-    skew  = outputs[2].numpy().flatten()
-    tail  = outputs[3].numpy().flatten()
+    print(outputs)
+    
+    mu    = outputs[:, 0]
+    std   = outputs[:, 1]
+    skew  = outputs[:, 2]
+    tail  = outputs[:, 3]
 
     pred_mu = np.mean(mu, axis=1)
     pred_std = np.mean(std, axis=1)
