@@ -165,7 +165,7 @@ def plot_mad_bars(results):
 # Run all
 # ------------------------------
 if __name__ == "__main__":
-    all_results = load_results("./results/exp/")
+    all_results = load_results(["./results/exp/"])
 
     print("Generating Figure 1...")
     plot_loss_curves(all_results)
