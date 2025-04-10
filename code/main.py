@@ -232,7 +232,7 @@ def execute_exp(args, multi_gpus:int=1):
     #          Note that if you use this, then you must repeat the training set
     #  validation_steps=None means that ALL validation samples will be used
 
-    sample_weight = np.where(train_y > 0, 5.0, 1.0)
+    sample_weight = np.where(train_y > 0, 20.0, 1.0)
     
     history = model_outer.fit(train_x,
                               train_y,
@@ -270,11 +270,11 @@ def execute_exp(args, multi_gpus:int=1):
     # Build actual distribution
     dist = tfd.SinhArcsinh(loc=mu, scale=std, skewness=skew, tailweight=tail)
 
-    # Sample to estimate prediction statistics
-    samples = dist.sample(1000).numpy()  # (1000, batch_size, 1) or (1000, batch_size)
+    # Samples from dist
+    samples = dist.sample(1000).numpy()
     samples = samples[..., 0]
 
-    # Sample-based statistics
+    # Compute information 
     pred_mean = np.mean(samples, axis=0)
     pred_median = np.percentile(samples, 50, axis=0)
     pred_std_sample = np.std(samples, axis=0)
@@ -283,10 +283,8 @@ def execute_exp(args, multi_gpus:int=1):
     pred_p75 = np.percentile(samples, 75, axis=0)
     pred_p90 = np.percentile(samples, 90, axis=0)
 
-    # Ground truth
+    # Mads
     y_true = test_y.flatten()
-
-    # Correct MADs
     mad_mean = np.mean(np.abs(y_true - pred_mean))
     mad_median = np.mean(np.abs(y_true - pred_median))
     mad_zero = np.mean(np.abs(y_true - 0.0))

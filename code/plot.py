@@ -119,7 +119,7 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
 # ------------------------------
 def plot_param_scatter(all_results):
     y_true = np.concatenate([r['y_true'] for r in all_results])
-    pred_mean = [r['pred_mean'] for r in all_results]
+    mu = [r['mu'] for r in all_results]
     std = np.concatenate([r['std'] for r in all_results])
     skew = np.concatenate([r['skew'] for r in all_results])
     tail = np.concatenate([r['tail'] for r in all_results])
@@ -133,7 +133,7 @@ def plot_param_scatter(all_results):
         plt.grid(True)
         plt.savefig(filename)
 
-    scatter_plot(y_true, pred_mean, "Observed RAIN", "Predicted Mean",
+    scatter_plot(y_true, mu, "Observed RAIN", "Predicted Mean",
                  "Figure 3a: Predicted Mean vs. Observed", "figures/figure3a_mean_vs_observed.png")
     scatter_plot(y_true, std, "Observed RAIN", "Predicted Std Dev",
                  "Figure 3b: Std Dev vs. Observed", "figures/figure3b_std_vs_observed.png")
