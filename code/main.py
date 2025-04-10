@@ -242,8 +242,6 @@ def execute_exp(args, multi_gpus:int=1):
     skew  = outputs[2].numpy().flatten()
     tail  = outputs[3].numpy().flatten()
 
-    print(mu)
-
     pred_mu = np.mean(mu, axis=0)
     pred_std = np.mean(std, axis=0)
     pred_tail = np.mean(tail, axis=0)

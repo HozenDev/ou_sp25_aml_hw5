@@ -92,7 +92,7 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
     _, p25 = extract_station_timeseries(test_x, res['percentile_25'].reshape(-1, 1), nstations, station_index)
     _, p75 = extract_station_timeseries(test_x, res['percentile_75'].reshape(-1, 1), nstations, station_index)
     _, p90 = extract_station_timeseries(test_x, res['percentile_90'].reshape(-1, 1), nstations, station_index)
-    _, pred_mean = extract_station_timeseries(test_x, res['pred_mean'].reshape(-1, 1), nstations, station_index)
+    _, pred_mean = extract_station_timeseries(test_x, res['pred_mu'].reshape(-1, 1), nstations, station_index)
 
     # Flatten all outputs
     y_true = y_true.flatten()
@@ -118,7 +118,7 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
 # ------------------------------
 def plot_param_scatter(all_results):
     y_true = np.concatenate([r['y_true'] for r in all_results])
-    pred_mean = np.concatenate([r['pred_mean'] for r in all_results])
+    pred_mean = np.concatenate([r['pred_mu'] for r in all_results])
     std = np.concatenate([r['pred_std'] for r in all_results])
     skew = np.concatenate([r['pred_skew'] for r in all_results])
     tail = np.concatenate([r['pred_tail'] for r in all_results])
