@@ -1,0 +1,185 @@
+2025-04-10 11:31:05.936669: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:10575] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-04-10 11:31:05.936744: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:479] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-04-10 11:31:06.025928: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1442] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-04-10 11:31:06.069869: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+wandb: Currently logged in as: dure0010 (dure0010-university-of-oklahoma). Use `wandb login --relogin` to force relogin
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Tracking run with wandb version 0.19.2
+wandb: Run data is saved locally in /home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run Net_R0
+wandb: ⭐️ View project at https://wandb.ai/dure0010-university-of-oklahoma/HW5
+wandb: 🚀 View run at https://wandb.ai/dure0010-university-of-oklahoma/HW5/runs/heow1wvc
+wandb: WARNING WandbCallback is deprecated and will be removed in a future release. Please use the WandbMetricsLogger, WandbModelCheckpoint, and WandbEvalCallback callbacks instead. See https://docs.wandb.ai/guides/integrations/keras for more information.
+wandb: WARNING The save_model argument by default saves the model in the HDF5 format that cannot save custom objects like subclassed models and custom layers. This behavior will be deprecated in a future release in favor of the SavedModel format. Meanwhile, the HDF5 model is saved as W&B files and the SavedModel as W&B Artifacts.
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+/home/fagg/miniconda3/envs/dnn/lib/python3.12/site-packages/tf_keras/src/engine/training.py:3098: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native TF-Keras format, e.g. `model.save('my_model.keras')`.
+  saving_api.save_model(
+wandb: Adding directory to artifact (/home/cs504305/hw5/wandb/run-20250410_113119-heow1wvc/files/model-best)... Done. 0.0s
+wandb:                                                                                
+wandb: 
+wandb: Run history:
+wandb:   Final Training Loss ▁
+wandb: Final Validation Loss ▁
+wandb:              MAD Mean ▁
+wandb:            MAD Median ▁
+wandb:              MAD Zero ▁
+wandb:              MAD_mean █▃▃▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:            MAD_median █▄▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▁▁▁▁▁▁▁▁▁▁
+wandb:              MAD_zero ▄▃▃▄▃▄▂▁▂▇▄▅▄▄▅▆▄▅▆▅▁▅▆▃█▄▆▅▃▂▄▅▄▃▆▃▄▇▃▅
+wandb:                 epoch ▁▁▁▁▁▂▂▂▂▃▃▃▄▄▄▄▄▄▄▄▅▅▅▅▅▆▆▆▆▆▆▆▆▇▇▇▇███
+wandb:                  loss █▄▃▃▃▃▃▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:          val_MAD_mean █▅▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:        val_MAD_median █▇▇▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:          val_MAD_zero ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:              val_loss ███▆▅▃▃▃▃▃▂▂▃▃▂▂▂▂▂▂▂▂▂▁▂▂▂▂▁▂▂▁▂▂▂▂▂▂▂▂
+wandb: 
+wandb: Run summary:
+wandb:   Final Training Loss -11.02392
+wandb: Final Validation Loss -5.64341
+wandb:              MAD Mean 0.44368
+wandb:            MAD Median 0.11915
+wandb:              MAD Zero 0.08389
+wandb:              MAD_mean 0.30787
+wandb:            MAD_median 0.3074
+wandb:              MAD_zero 0.07695
+wandb:            best_epoch 192
+wandb:         best_val_loss -6.98119
+wandb:                 epoch 392
+wandb:              hostname c922.oscer.ou.edu
+wandb:                  loss -11.02392
+wandb:          val_MAD_mean 0.37686
+wandb:        val_MAD_median 0.37584
+wandb:          val_MAD_zero 0.0942
+wandb:              val_loss -5.64341
+wandb: 
+wandb: 🚀 View run Net_R0 at: https://wandb.ai/dure0010-university-of-oklahoma/HW5/runs/heow1wvc
+wandb: ⭐️ View project at: https://wandb.ai/dure0010-university-of-oklahoma/HW5
+wandb: Synced 5 W&B file(s), 3 media file(s), 216 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20250410_113119-heow1wvc/logs
