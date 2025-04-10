@@ -2,9 +2,9 @@
 --Nfolds=8
 --Ntraining=6
 --patience=200
---batch=16
---min_delta=0.01
+--batch=32
+--min_delta=0.0005
 --no_use_py_func
 --project=HW5
 --epochs=1000
---steps_per_epoch=2000
+--steps_per_epoch=1000
