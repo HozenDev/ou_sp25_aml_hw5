@@ -1,8 +1,13 @@
 --hidden
-128
+64
 64
 32
+32
 16
---activation_dense=tanh
---lrate=.0001
---label=Net_2H
+8
+--activation_dense=elu
+--L2_regularization=.001
+--dropout=.3
+--batch_normalization
+--lrate=.00005
+--label=Net

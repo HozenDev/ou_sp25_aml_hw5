@@ -11,7 +11,8 @@ def fully_connected_stack(n_inputs,
                           activation='elu', 
                           activation_out=['linear'],
                           dropout=None, 
-                          dropout_input=None, 
+                          dropout_input=None,
+                          batch_normalization=None,
                           kernel_regularizer_L2=None, 
                           kernel_regularizer_L1=None):
 
@@ -57,7 +58,9 @@ def fully_connected_stack(n_inputs,
     for i, n in enumerate(n_hidden):             
         tensor = Dense(n, use_bias=True, name="hidden_%02d"%(i), activation=activation,
                  kernel_regularizer=kernel_regularizer)(tensor)
-        tensor = BatchNormalization()(tensor)
+
+        if batch_normalization is not None:
+            tensor = BatchNormalization()(tensor)
         
         if dropout is not None:
             tensor = Dropout(rate=dropout, name="dropout_%02d"%(i))(tensor)
@@ -69,7 +72,7 @@ def fully_connected_stack(n_inputs,
 
         if act == 'softplus':
             o = Activation('softplus')(o)
-            o = Lambda(lambda x: x + 1e-3)(o)  # ensure positivity and numerical safety
+            o = Lambda(lambda x: x + 1e-3)(o)  # make it positive
         else:
             o = Activation(act)(o)
             

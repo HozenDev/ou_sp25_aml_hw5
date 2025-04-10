@@ -133,9 +133,10 @@ def execute_exp(args, multi_gpus:int=1):
     input_tensor, output_tensors  = fully_connected_stack(n_inputs=n_inputs,
                                                           n_hidden=args.hidden,
                                                           n_output=n_output,
+                                                          batch_normalization=args.batch_normalization,
                                                           activation=args.activation_dense,
-                                                          activation_out=['linear', 'softplus', 'tanh', 'softplus'],
-                                                          dropout=None)
+                                                          activation_out=['relu', 'softplus', 'relu', 'softplus'],
+                                                          dropout=args.dropout)
 
     model_inner = Model(inputs=input_tensor, outputs=output_tensors)
 
