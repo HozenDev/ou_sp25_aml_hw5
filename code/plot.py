@@ -171,7 +171,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     check_args(args)
     
-    all_results = load_results(["./results/exp/"])
+    all_results = load_results(["./models/exp_good/"])
 
     print("Generating Figure 1...")
     plot_loss_curves(all_results)
