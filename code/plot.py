@@ -92,20 +92,26 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
     _, p25 = extract_station_timeseries(test_x, res['percentile_25'].reshape(-1, 1), nstations, station_index)
     _, p75 = extract_station_timeseries(test_x, res['percentile_75'].reshape(-1, 1), nstations, station_index)
     _, p90 = extract_station_timeseries(test_x, res['percentile_90'].reshape(-1, 1), nstations, station_index)
-    _, pred_mean = extract_station_timeseries(test_x, res['pred_mean'].reshape(-1, 1), nstations, station_index)
+    _, mean = extract_station_timeseries(test_x, res['pred_mean'].reshape(-1, 1), nstations, station_index)
 
     # Flatten all outputs
-    x = test_x.flatten()
     y_true = y_true.flatten()
-    pred_mean = pred_mean.flatten()
+    mean = mean.flatten()
     p10 = p10.flatten()
     p25 = p25.flatten()
     p75 = p75.flatten()
     p90 = p90.flatten()
 
+    print("Mean range:", np.min(mean), np.max(mean))
+    print("P10 range:", np.min(p10), np.max(p10))
+    print("P90 range:", np.min(p90), np.max(p90))
+    print("Length y_true:", len(y_true))
+    print("Length mean:", len(mean))
+
+
     plt.figure()
     plt.plot(y_true, label="True RAIN", color='black', alpha=0.5)
-    plt.plot(pred_mean, label="Predicted Mean", linestyle='--')
+    plt.plot(mean, label="Predicted Mean", linestyle='--')
     plt.fill_between(range(len(p10)), p10, p90, alpha=0.2, label="10–90%")
     plt.fill_between(range(len(p25)), p25, p75, alpha=0.4, label="25–75%")
     plt.xlabel("Day Index")
@@ -117,8 +123,20 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
 # ------------------------------
 # Figure 3: Scatter plots
 # ------------------------------
+def get_matching_y_true(y_true, nstations=68, test_stations=17):
+    """
+    Extracts the y_true values that correspond to the predicted stations (typically first 17 of 68).
+    """
+    days = len(y_true) // nstations
+    y_true_matrix = y_true.reshape((days, nstations))
+    y_pred = y_true_matrix[:, :test_stations]  # assuming first 17 stations are test
+    return y_pred.flatten()
+
 def plot_param_scatter(all_results):
-    y_true = np.concatenate([r['y_true'] for r in all_results])
+    y_true = np.concatenate([
+        get_matching_y_true(r['y_true'], nstations=68, test_stations=17)
+        for r in all_results
+    ])
     mu = np.concatenate([r['mu'] for r in all_results])
     std = np.concatenate([r['std'] for r in all_results])
     skew = np.concatenate([r['skew'] for r in all_results])
