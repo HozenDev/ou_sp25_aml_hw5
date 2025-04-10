@@ -135,7 +135,7 @@ def execute_exp(args, multi_gpus:int=1):
                                                           n_output=n_output,
                                                           batch_normalization=args.batch_normalization,
                                                           activation=args.activation_dense,
-                                                          activation_out=['relu', 'softplus', 'relu', 'softplus'],
+                                                          activation_out=['linear', 'softplus', 'tanh', 'softplus'],
                                                           dropout=args.dropout)
 
     model_inner = Model(inputs=input_tensor, outputs=output_tensors)

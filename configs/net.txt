@@ -5,8 +5,8 @@
 32
 16
 8
---activation_dense=elu
---L2_regularization=.001
+--activation_dense=relu
+--L2_regularization=.0001
 --dropout=.3
 --batch_normalization
 --lrate=.00005
