@@ -237,26 +237,26 @@ def execute_exp(args, multi_gpus:int=1):
     # One parameterized dist for every element in t
     outputs = model_inner(test_x, training=False)  # list of 4 tensors
 
-    print(outputs)
-    
-    mu    = outputs[:, 0]
-    std   = outputs[:, 1]
-    skew  = outputs[:, 2]
-    tail  = outputs[:, 3]
+    mu    = outputs[0].numpy().flatten()
+    std   = outputs[1].numpy().flatten()
+    skew  = outputs[2].numpy().flatten()
+    tail  = outputs[3].numpy().flatten()
 
-    pred_mu = np.mean(mu, axis=1)
-    pred_std = np.mean(std, axis=1)
-    pred_tail = np.mean(tail, axis=1)
-    pred_skew = np.mean(skew, axis=1)
+    print(mu)
 
-    pred_p10 = np.percentile(mu, 10, axis=1)
-    pred_p25 = np.percentile(mu, 25, axis=1)
-    pred_p75 = np.percentile(mu, 75, axis=1)
-    pred_p90 = np.percentile(mu, 90, axis=1)
+    pred_mu = np.mean(mu, axis=0)
+    pred_std = np.mean(std, axis=0)
+    pred_tail = np.mean(tail, axis=0)
+    pred_skew = np.mean(skew, axis=0)
 
-    mad_mean = np.mean(std, axis=1)
-    mad_median = np.median(std, axis=1)
-    mad_zero = np.mean(np.abs(std), axis=1)
+    pred_p10 = np.percentile(mu, 10, axis=0)
+    pred_p25 = np.percentile(mu, 25, axis=0)
+    pred_p75 = np.percentile(mu, 75, axis=0)
+    pred_p90 = np.percentile(mu, 90, axis=0)
+
+    mad_mean = np.mean(std, axis=0)
+    mad_median = np.median(std, axis=0)
+    mad_zero = np.mean(np.abs(std), axis=0)
 
     y_true = test_y.numpy().flatten()
 
