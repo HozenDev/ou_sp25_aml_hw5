@@ -124,7 +124,7 @@ def plot_param_scatter(all_results):
     skew = np.concatenate([r['skew'] for r in all_results])
     tail = np.concatenate([r['tail'] for r in all_results])
 
-    print(mu.shape, std.shape, skew.shape, tail.shape)
+    print(mu.shape, std.shape, skew.shape, tail.shape, y_true.shape)
 
     def scatter_plot(x, y, xlabel, ylabel, title, filename):
         plt.figure()
