@@ -257,10 +257,6 @@ def execute_exp(args, multi_gpus:int=1):
     skew  = outputs[2].numpy().flatten()
     tail  = outputs[3].numpy().flatten()
 
-    # Prevent high mad mean
-    skew = tf.clip_by_value(skew, -1.0, 1.0)
-    tail = tf.clip_by_value(tail, 0.5, 2.0)
-
     pred_mu = np.mean(mu, axis=0)
     pred_std = np.mean(std, axis=0)
     pred_skew = np.mean(skew, axis=0)
