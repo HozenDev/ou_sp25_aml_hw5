@@ -258,7 +258,7 @@ def execute_exp(args, multi_gpus:int=1):
     mad_median = np.median(std, axis=0)
     mad_zero = np.mean(np.abs(std), axis=0)
 
-    y_true = test_y.numpy().flatten()
+    y_true = test_y.flatten()
 
     wandb.log({
         "MAD Mean": mad_mean,
@@ -295,7 +295,8 @@ def execute_exp(args, multi_gpus:int=1):
     
     # Save model
     if args.save_model:
-        model_inner.save("%s_model.keras"%(fbase))
+        model_inner.save("%s_inner_model.keras"%(fbase))
+        model_outer.save("%s_outer_model.keras"%(fbase))
 
     wandb.finish()
 
