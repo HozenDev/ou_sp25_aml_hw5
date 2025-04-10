@@ -245,19 +245,32 @@ def execute_exp(args, multi_gpus:int=1):
 
     pred_mu = np.mean(mu, axis=0)
     pred_std = np.mean(std, axis=0)
-    pred_tail = np.mean(tail, axis=0)
     pred_skew = np.mean(skew, axis=0)
+    pred_tail = np.mean(tail, axis=0)
 
-    pred_p10 = np.percentile(mu, 10, axis=0)
-    pred_p25 = np.percentile(mu, 25, axis=0)
-    pred_p75 = np.percentile(mu, 75, axis=0)
-    pred_p90 = np.percentile(mu, 90, axis=0)
+    # Build actual distribution
+    dist = tfd.SinhArcsinh(loc=mu, scale=std, skewness=skew, tailweight=tail)
 
-    mad_mean = np.mean(std, axis=0)
-    mad_median = np.median(std, axis=0)
-    mad_zero = np.mean(np.abs(std), axis=0)
+    # Sample to estimate prediction statistics
+    samples = dist.sample(1000).numpy()  # (1000, batch_size, 1) or (1000, batch_size)
+    samples = samples[..., 0]
 
+    # Sample-based statistics
+    pred_mean = np.mean(samples, axis=0)
+    pred_median = np.percentile(samples, 50, axis=0)
+    pred_std_sample = np.std(samples, axis=0)
+    pred_p10 = np.percentile(samples, 10, axis=0)
+    pred_p25 = np.percentile(samples, 25, axis=0)
+    pred_p75 = np.percentile(samples, 75, axis=0)
+    pred_p90 = np.percentile(samples, 90, axis=0)
+
+    # Ground truth
     y_true = test_y.flatten()
+
+    # Correct MADs
+    mad_mean = np.mean(np.abs(y_true - pred_mean))
+    mad_median = np.mean(np.abs(y_true - pred_median))
+    mad_zero = np.mean(np.abs(y_true - 0.0))
 
     wandb.log({
         "MAD Mean": mad_mean,
@@ -281,6 +294,9 @@ def execute_exp(args, multi_gpus:int=1):
         'pred_std': pred_std,
         'pred_skew': pred_skew,
         'pred_tail': pred_tail,
+        'pred_mean': pred_mean,
+        'pred_median': pred_median,
+        'pred_std_sample': pred_std_sample,
         'percentile_10': pred_p10,
         'percentile_25': pred_p25,
         'percentile_75': pred_p75,
