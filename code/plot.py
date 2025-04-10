@@ -4,14 +4,54 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from mesonet_support import extract_station_timeseries
+import keras
 
 plt.style.use('seaborn-v0_8-muted')
 plt.rcParams['figure.figsize'] = (10, 6)
 plt.rcParams['font.size'] = 14
 
-def load_all_results(result_dir="results/exp"):
-    result_files = sorted(glob.glob(os.path.join(result_dir, "rotation_*_results.pkl")))
-    return [pickle.load(open(f, "rb")) for f in result_files]
+def load_trained_model(model_dir, substring_name):
+    """
+    Load a trained models
+    """
+    model_files = [f for f in os.listdir(model_dir) if substring_name in f and f.endswith(".keras")]
+
+    if not model_files:
+        raise ValueError(f"No model found in {model_dir} matching {substring_name}")
+
+    model_path = os.path.join(model_dir, model_files[0])
+    model = keras.models.load_model(model_path)
+
+    return model
+
+def load_results_iter(results_dir):
+    """
+    Generator to load model results from a directory.
+    Reduce memory usage compared to load results method.
+    """
+    files = [os.path.join(results_dir, f) for f in os.listdir(results_dir) if f.endswith(".pkl")]
+    
+    for filename in files:
+        with open(filename, "rb") as fp:
+            data = pickle.load(fp)
+            yield data
+            
+
+def load_results(results_dir):
+    """
+    Load model results from a directory
+    """
+    results = []
+    files = []
+    for r_dir in results_dir:
+        files.extend([os.path.join(r_dir, f) for f in os.listdir(r_dir) if f.endswith(".pkl")])
+
+    for filename in files:
+        with open(filename, "rb") as fp:
+            data = pickle.load(fp)
+            results.append(data)
+
+    return results
 
 # ------------------------------
 # Figure 1: Loss curves
@@ -125,7 +165,7 @@ def plot_mad_bars(results):
 # Run all
 # ------------------------------
 if __name__ == "__main__":
-    all_results = load_all_results()
+    all_results = load_results("results/exp")
 
     print("Generating Figure 1...")
     plot_loss_curves(all_results)
@@ -138,5 +178,3 @@ if __name__ == "__main__":
 
     print("Generating Figure 4...")
     plot_mad_bars(all_results)
-
-    print("✅ All figures saved to /figures/")
