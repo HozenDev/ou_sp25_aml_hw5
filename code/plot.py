@@ -92,20 +92,20 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
     _, p25 = extract_station_timeseries(test_x, res['percentile_25'].reshape(-1, 1), nstations, station_index)
     _, p75 = extract_station_timeseries(test_x, res['percentile_75'].reshape(-1, 1), nstations, station_index)
     _, p90 = extract_station_timeseries(test_x, res['percentile_90'].reshape(-1, 1), nstations, station_index)
-    _, mu = extract_station_timeseries(test_x, res['mu'].reshape(-1, 1), nstations, station_index)
+    _, pred_mean = extract_station_timeseries(test_x, res['pred_mean'].reshape(-1, 1), nstations, station_index)
 
     # Flatten all outputs
     x = test_x.flatten()
     y_true = y_true.flatten()
-    mu = mu.flatten()
+    pred_mean = pred_mean.flatten()
     p10 = p10.flatten()
     p25 = p25.flatten()
     p75 = p75.flatten()
     p90 = p90.flatten()
 
     plt.figure()
-    plt.plot(x, y_true, label="True RAIN", color='black', alpha=0.5, style='.')
-    plt.plot(x, mu, label="Predicted Mean", linestyle='--')
+    plt.plot(y_true, label="True RAIN", color='black', alpha=0.5, style='.')
+    plt.plot(pred_mean, label="Predicted Mean", linestyle='--')
     plt.fill_between(range(len(p10)), p10, p90, alpha=0.2, label="10–90%")
     plt.fill_between(range(len(p25)), p25, p75, alpha=0.4, label="25–75%")
     plt.xlabel("Day Index")
@@ -119,7 +119,7 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
 # ------------------------------
 def plot_param_scatter(all_results):
     y_true = np.concatenate([r['y_true'] for r in all_results])
-    mu = [r['mu'] for r in all_results]
+    pred_mean = [r['pred_mean'] for r in all_results]
     std = np.concatenate([r['std'] for r in all_results])
     skew = np.concatenate([r['skew'] for r in all_results])
     tail = np.concatenate([r['tail'] for r in all_results])
@@ -133,7 +133,7 @@ def plot_param_scatter(all_results):
         plt.grid(True)
         plt.savefig(filename)
 
-    scatter_plot(y_true, mu, "Observed RAIN", "Predicted Mean",
+    scatter_plot(y_true, pred_mean, "Observed RAIN", "Predicted Mean",
                  "Figure 3a: Predicted Mean vs. Observed", "figures/figure3a_mean_vs_observed.png")
     scatter_plot(y_true, std, "Observed RAIN", "Predicted Std Dev",
                  "Figure 3b: Std Dev vs. Observed", "figures/figure3b_std_vs_observed.png")
