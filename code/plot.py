@@ -1,10 +1,8 @@
 import os
-import glob
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from mesonet_support import extract_station_timeseries, get_mesonet_folds
-import keras
+# from mesonet_support import extract_station_timeseries, get_mesonet_folds
 
 from parser import check_args, create_parser
 
@@ -132,16 +130,37 @@ def get_matching_y_true(y_true, nstations=68, test_stations=17):
     y_pred = y_true_matrix[:, :test_stations]  # assuming first 17 stations are test
     return y_pred.flatten()
 
+import numpy as np
+
+def average_every_four(arr):
+    """
+    Given an array of shape (4 * N,), returns a new array of shape (N,)
+    where each element is the mean of 4 consecutive values in the input.
+    """
+    arr = np.asarray(arr)
+    assert arr.ndim == 1, "Input array must be 1-dimensional"
+    assert len(arr) % 4 == 0, "Array length must be divisible by 4"
+
+    reshaped = arr.reshape(-1, 4)  # shape (N, 4)
+    return np.mean(reshaped, axis=1)  # shape (N,)
+
+
 def plot_param_scatter(all_results):
-    y_true = np.concatenate([
-        get_matching_y_true(r['y_true'], nstations=68, test_stations=17)
-        for r in all_results
-    ])
+    y_true = np.concatenate([r['y_true'] for r in all_results])
+
+    print("mu shape:", all_results[0]['mu'].shape)
+    print("y_true shape:", all_results[0]['y_true'].shape)
+    
     mu = np.concatenate([r['mu'] for r in all_results])
     std = np.concatenate([r['std'] for r in all_results])
     skew = np.concatenate([r['skew'] for r in all_results])
     tail = np.concatenate([r['tail'] for r in all_results])
 
+    mu = average_every_four(mu)
+    std = average_every_four(std)
+    skew = average_every_four(skew)
+    tail = average_every_four(tail)
+    
     print(mu.shape, std.shape, skew.shape, tail.shape, y_true.shape)
 
     def scatter_plot(x, y, xlabel, ylabel, title, filename):
@@ -169,13 +188,16 @@ def plot_mad_bars(results):
     rotations = [r['rotation'] for r in results]
     mad_mean = [r['mad_mean'] for r in results]
     mad_median = [r['mad_median'] for r in results]
+    mad_zero = [r['mad_zero'] for r in results]
 
     x = np.arange(len(rotations))
+    bar_width = 0.10
     width = 0.35
 
     plt.figure()
-    plt.bar(x - width/2, mad_mean, width, label="Mean Prediction")
-    plt.bar(x + width/2, mad_median, width, label="Median Prediction")
+    plt.bar(x - width/2, mad_median, bar_width, label="MAD Median")
+    plt.bar(x, mad_mean, bar_width, label="MAD Mean")
+    plt.bar(x + width/2, mad_zero, bar_width, label="MAD Zero")
     plt.xticks(x, [f"R{r}" for r in rotations])
     plt.ylabel("MAD")
     plt.title("Figure 4: MAD Across Rotations")
@@ -194,7 +216,7 @@ if __name__ == "__main__":
     all_results = load_results(["./models/exp_good/"])
 
     print("Generating Figure 1...")
-    plot_loss_curves(all_results)
+    # plot_loss_curves(all_results)
 
     print("Generating Figure 2...")
     plot_timeseries_example(args.dataset, 0, all_results[0], station_index=0, nstations=17)

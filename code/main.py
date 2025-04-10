@@ -125,7 +125,7 @@ def execute_exp(args, multi_gpus:int=1):
         print('Building network')
 
     n_inputs = train_x.shape[1]
-    d_output = 4
+    d_output = 1
 
     n_output = [d_output for _ in range(SinhArcsinh.num_params())]
 
@@ -150,7 +150,6 @@ def execute_exp(args, multi_gpus:int=1):
 
     # Optimizer
     opt = keras.optimizers.Adam(learning_rate=args.lrate, clipnorm=1.0, amsgrad=False)
-
     
     metrics = [
         WeightedMeanAbsoluteDifferenceMetric(name="MAD_median"),

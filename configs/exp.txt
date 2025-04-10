@@ -2,8 +2,8 @@
 --Nfolds=8
 --Ntraining=6
 --patience=200
---batch=32
---min_delta=0.0005
+--batch=16
+--min_delta=0.005
 --no_use_py_func
 --project=HW5
 --epochs=1000
