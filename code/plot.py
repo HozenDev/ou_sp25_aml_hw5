@@ -3,8 +3,10 @@ import glob
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from mesonet_support import extract_station_timeseries
+from mesonet_support import extract_station_timeseries, get_mesonet_folds
 import keras
+
+from parser import check_args, create_parser
 
 plt.style.use('seaborn-v0_8-muted')
 plt.rcParams['figure.figsize'] = (10, 6)
@@ -80,19 +82,17 @@ def plot_loss_curves(results):
 # ------------------------------
 # Figure 2: Time-series for 1 station using provided function
 # ------------------------------
-def plot_timeseries_example(res, station_index=0, nstations=17):
-    _, y_true = extract_station_timeseries(
-        ins=np.zeros((len(res["y_true"]), 1)),  # dummy input, not used
-        outs=res["y_true"].reshape(-1, 1),
-        nstations=nstations,
-        station_index=station_index
-    )
+def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstations=17):
 
-    _, p10 = extract_station_timeseries(None, res['percentile_10'].reshape(-1, 1), nstations, station_index)
-    _, p25 = extract_station_timeseries(None, res['percentile_25'].reshape(-1, 1), nstations, station_index)
-    _, p75 = extract_station_timeseries(None, res['percentile_75'].reshape(-1, 1), nstations, station_index)
-    _, p90 = extract_station_timeseries(None, res['percentile_90'].reshape(-1, 1), nstations, station_index)
-    _, pred_mean = extract_station_timeseries(None, res['pred_mean'].reshape(-1, 1), nstations, station_index)
+    _, _, _, _, _, _, test_x, _, _ = \
+        get_mesonet_folds(dataset_fname=dataset_path, rotation=rotation)
+
+    _, y_true = extract_station_timeseries(test_x, res["y_true"].reshape(-1, 1), nstations, station_index)
+    _, p10 = extract_station_timeseries(test_x, res['percentile_10'].reshape(-1, 1), nstations, station_index)
+    _, p25 = extract_station_timeseries(test_x, res['percentile_25'].reshape(-1, 1), nstations, station_index)
+    _, p75 = extract_station_timeseries(test_x, res['percentile_75'].reshape(-1, 1), nstations, station_index)
+    _, p90 = extract_station_timeseries(test_x, res['percentile_90'].reshape(-1, 1), nstations, station_index)
+    _, pred_mean = extract_station_timeseries(test_x, res['pred_mean'].reshape(-1, 1), nstations, station_index)
 
     # Flatten all outputs
     y_true = y_true.flatten()
@@ -165,13 +165,18 @@ def plot_mad_bars(results):
 # Run all
 # ------------------------------
 if __name__ == "__main__":
+    # Parse command-line arguments
+    parser = create_parser()
+    args = parser.parse_args()
+    check_args(args)
+    
     all_results = load_results(["./results/exp/"])
 
     print("Generating Figure 1...")
     plot_loss_curves(all_results)
 
     print("Generating Figure 2...")
-    plot_timeseries_example(all_results[0], station_index=0, nstations=17)
+    plot_timeseries_example(args.dataset, 0, all_results[0], station_index=0, nstations=17)
 
     print("Generating Figure 3...")
     plot_param_scatter(all_results)
