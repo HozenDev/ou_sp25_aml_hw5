@@ -119,7 +119,7 @@ def plot_timeseries_example(dataset_path, rotation, res, station_index=0, nstati
 # ------------------------------
 def plot_param_scatter(all_results):
     y_true = np.concatenate([r['y_true'] for r in all_results])
-    mu = [r['mu'] for r in all_results]
+    mu = np.concatenate([r['mu'] for r in all_results])
     std = np.concatenate([r['std'] for r in all_results])
     skew = np.concatenate([r['skew'] for r in all_results])
     tail = np.concatenate([r['tail'] for r in all_results])
