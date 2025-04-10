@@ -125,7 +125,7 @@ def execute_exp(args, multi_gpus:int=1):
         print('Building network')
 
     n_inputs = train_x.shape[1]
-    d_output = 1
+    d_output = 4
 
     n_output = [d_output for _ in range(SinhArcsinh.num_params())]
 
