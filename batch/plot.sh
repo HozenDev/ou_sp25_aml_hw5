@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --partition=normal
+#SBATCH --partition=debug_5min
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=40
 #SBATCH --mem=1G
