@@ -98,7 +98,7 @@ def plot_figure2(res, dataset_path, rotation=0, station_indices=[0, 5, 10, 15],
         dataset_fname=dataset_path, rotation=rotation)
 
     # Unpack predicted values
-    pred_mean = res['pred_mean']
+    pred_mean = res['mu']
     p10 = res['percentile_10']
     p25 = res['percentile_25']
     p75 = res['percentile_75']
@@ -108,9 +108,16 @@ def plot_figure2(res, dataset_path, rotation=0, station_indices=[0, 5, 10, 15],
     n_stations = len(station_indices)
     fig, axs = plt.subplots(n_stations, 1, figsize=(12, 3.5 * n_stations), sharex=False)
 
+    print("pred_mean shape:", pred_mean.shape)
+    print("p10 shape:", p10.shape)
+    
     for i, station_idx in enumerate(station_indices):
         # Extract station time series
         _, y_station = extract_station_timeseries(test_x, test_y, test_nstations, station_idx)
+
+        print("station_idx:", station_idx)
+        print("test_nstations:", test_nstations)
+        
         pred_station_mean = pred_mean[station_idx::test_nstations]
         pred_p10 = p10[station_idx::test_nstations]
         pred_p25 = p25[station_idx::test_nstations]
