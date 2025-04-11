@@ -113,7 +113,8 @@ def plot_figure2(res, dataset_path, rotation=0, station_indices=[0, 5, 10, 15],
         skew = res['skew']
         tail = res['tail']
         dist = tfd.SinhArcsinh(loc=mu, scale=std, skewness=skew, tailweight=tail)
-        samples = dist.sample(1000).numpy()[..., 0]
+        samples = dist.sample(1000).numpy()
+        print("samples shape:", samples.shape)
 
         res['pred_mean'] = np.mean(samples, axis=0)
         res['percentile_10'] = np.percentile(samples, 10, axis=0)
