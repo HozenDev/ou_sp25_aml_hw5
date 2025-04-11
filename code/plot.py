@@ -2,8 +2,8 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-# from mesonet_support import extract_station_timeseries, get_mesonet_folds
-# import keras
+from mesonet_support import extract_station_timeseries, get_mesonet_folds
+import keras
 
 from parser import check_args, create_parser
 
@@ -221,7 +221,7 @@ if __name__ == "__main__":
     all_results = load_results(["./models/exp_v/"])
 
     print("Generating Figure 1...")
-    # plot_loss_curves(all_results)
+    plot_loss_curves(all_results)
 
     print("Generating Figure 2...")
     plot_figure2(all_results[0], dataset_path=args.dataset, rotation=1, station_indices=[0, 3, 5, 7], window_size=120, output_path='figures/figure_2.png')
