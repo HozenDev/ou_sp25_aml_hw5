@@ -4,6 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mesonet_support import extract_station_timeseries, get_mesonet_folds
 import keras
+# Tensorflow
+import tensorflow_probability as tfp
+
+# Sub namespaces that are useful later
+# Tensorflow Distributions
+tfd = tfp.distributions
+# Probability Layers 
+tfpl = tfp.layers
 
 from parser import check_args, create_parser
 
@@ -97,6 +105,22 @@ def plot_figure2(res, dataset_path, rotation=0, station_indices=[0, 5, 10, 15],
     _, _, _, _, _, _, test_x, test_y, test_nstations = get_mesonet_folds(
         dataset_fname=dataset_path, rotation=rotation)
 
+    # If pred_mean is scalar, rebuild predictions
+    if np.isscalar(res.get('pred_mean', 0)) or not hasattr(res['pred_mean'], '__len__'):
+        print("Detected scalar in results — reconstructing distributions...")
+        mu = res['mu']
+        std = res['std']
+        skew = res['skew']
+        tail = res['tail']
+        dist = tfd.SinhArcsinh(loc=mu, scale=std, skewness=skew, tailweight=tail)
+        samples = dist.sample(1000).numpy()[..., 0]
+
+        res['pred_mean'] = np.mean(samples, axis=0)
+        res['percentile_10'] = np.percentile(samples, 10, axis=0)
+        res['percentile_25'] = np.percentile(samples, 25, axis=0)
+        res['percentile_75'] = np.percentile(samples, 75, axis=0)
+        res['percentile_90'] = np.percentile(samples, 90, axis=0)
+    
     # Unpack predicted values
     pred_mean = res['mu']
     p10 = res['percentile_10']
@@ -108,15 +132,14 @@ def plot_figure2(res, dataset_path, rotation=0, station_indices=[0, 5, 10, 15],
     n_stations = len(station_indices)
     fig, axs = plt.subplots(n_stations, 1, figsize=(12, 3.5 * n_stations), sharex=False)
 
+    print("test_y shape:", test_y.shape)
+    print("test_x shape:", test_x.shape)
     print("pred_mean shape:", pred_mean.shape)
     print("p10 shape:", p10.shape)
     
     for i, station_idx in enumerate(station_indices):
         # Extract station time series
         _, y_station = extract_station_timeseries(test_x, test_y, test_nstations, station_idx)
-
-        print("station_idx:", station_idx)
-        print("test_nstations:", test_nstations)
         
         pred_station_mean = pred_mean[station_idx::test_nstations]
         pred_p10 = p10[station_idx::test_nstations]
