@@ -1,0 +1,175 @@
+* Setup :ignore:
+
+#+SETUPFILE: ~/public/hozen-style/latex/hozen.setup
+
+# Ensure that we respect org mode new line
+# #+OPTIONS: \n:t
+
+# To disbale _ and ^ behaviour but keep ^{} and _{}
+#+OPTIONS: ^:{}
+
+#+LATEX_HEADER: \usepackage[linesnumbered]{algorithm2e}
+#+LATEX_HEADER: \usepackage[inkscapelatex=false]{svg}
+
+* Page de garde :ignore:
+** Informations :ignore:
+
+#+AUTHOR: Author: Enzo Durel
+#+AUTHOR: \newline
+#+AUTHOR: 
+#+EMAIL: /
+#+TITLE: 5043 Advanced Machine Learning - HW 5
+#+OPTIONS: toc:nil
+
+** Logo :ignore:
+
+#+ATTR_LATEX: :width 10cm :align left
+[[file:~/orgmode_latex_export_img/ou_logo.png]]
+
+** newpage :noexport:
+
+#+begin_export latex
+\newpage
+#+end_export
+
+** Table des matières :ignore:
+
+#+LATEX: \thispagestyle{empty}
+#+TOC: headlines 3
+#+LATEX: \clearpage
+#+LATEX: \pagenumbering{arabic} 
+
+** Liste des figures :ignore:
+
+#+begin_export latex
+\thispagestyle{empty}
+\listoffigures
+\clearpage
+\pagenumbering{arabic} 
+#+end_export
+
+** Liste des algorithmes :noexport:
+
+#+begin_export latex
+\thispagestyle{empty}
+\listofalgorithms
+\clearpage
+\pagenumbering{arabic} 
+#+end_export
+
+** newpage :ignore:
+
+#+begin_export latex
+\newpage
+#+end_export
+
+* Figures
+** Figure 0
+
+#+caption: Inner model
+#+attr_latex: :height 18cm :float nil
+[[file:./img/figure_0.png]]
+
+** Figure 1a
+
+#+caption: Training Loss
+#+attr_latex: :width 12cm :float nil
+[[file:./img/figure_1a.png]]
+
+** Figure 1b
+
+#+caption: Validation Loss
+#+attr_latex: :width 12cm :float nil
+[[file:./img/figure_1b.png]]
+
+** Figure 2
+
+#+caption: Timestamps examples from different stations
+#+attr_latex: :width 12cm :float nil
+[[file:./img/figure_2.png]]
+
+** Figure 3a
+
+#+caption: Predicted mean
+#+attr_latex: :width 12cm :float nil
+[[file:./img/figure_3a.png]]
+
+** Figure 3b
+
+#+caption: Predicted standard deviation
+#+attr_latex: :width 12cm :float nil
+[[file:./img/figure_3b.png]]
+
+** Figure 3c
+
+#+caption: Predicted skewness
+#+attr_latex: :width 12cm :float nil
+[[file:./img/figure_3c.png]]
+
+** Figure 3d
+
+#+caption: Predicted tailweight
+#+attr_latex: :width 12cm :float nil
+[[file:./img/figure_3d.png]]
+
+** Figure 4
+
+#+caption: MAD scores comparaison
+#+attr_latex: :width 12cm :float nil
+[[file:./img/figure_4.png]]
+
+** Other Figures
+
+#+caption: MAD Mean Validation
+#+attr_latex: :width 12cm :float nil
+[[file:./img/mad_mean.png]]
+
+#+caption: MAD Median Validation
+#+attr_latex: :width 12cm :float nil
+[[file:./img/val_mad_median.png]]
+
+#+caption: MAD Scores
+#+attr_latex: :width 12cm :float nil
+[[file:./img/mads.png]]
+
+I provided this additional figures, the first and the second figures, show the validation MADs as metrics, could be used as a loss that tend to 0. We can clearly see that the model converge and is consistent because the validation mads decrease as the validation loss decreases too.
+
+We can even see the MAD Scores that the validation MAD median and training MAD median is slightly lower than the MAD zero.
+
+** newpage :ignore:
+
+#+begin_src latex
+\newpage
+#+end_src
+
+* Analysis & Discussion
+** /"Discuss in detail how consistent your model performance is across the different rotations."/
+
+We can see in figure 1a and figure 1b that for each rotation, the training loss and validation loss decrease similarly. We can see that each loss tend to the same point, around -33 in NLL. We can also see that the curves are pretty stable, the training more than the validation.
+
+I used dropout and l2 regularization in my inner model to prevent overfitting. It helps to get very good MADs. We can see in figure 4 each rotation has a MAD median and MAD mean near the MAD zero. This proves stability and consitency in the model across all rotations.
+
+** /"Given the time-series plots, describe and explain the shape of the pdf and how it changes with time."/
+
+The figure 2 plot shows how the model adjusts the shape of its predicted distribution to match the weather conditions. When the rainfall is 0, the predicted distribution is narrow around zero. As the rainy probability increase, the variance increases too showing the uncertainty in weather forecast.
+
+The model tends to predict higher when it's "heavy rain" probably because the inputs is massively composed of 0.
+
+** /"Discuss how skewness is used by the model. Is there a consistent variation in this distribution parameter?"/
+
+The figure 3c shows that the predicted skewness fixed around two tight bands, one at 0.39 and the other at 0.59. The model could not leveraging the skewness parameter dynamically. Maybe, the model determines or preferred other parameters such as deviation or tailweight.
+
+** /"Discuss how tailweight is used by the model. Is there a consistent variation in this distribution parameter?"/
+
+Like skewness, predicted tailweight is tightly constrained between 9.8 and 10.6. I think the problem here is that, because the data contains a lot of 0, it is hard for the model to get high variation in parameters. We can see this for the tailweighted, but it was the same for the skewness.
+
+** /"Is Sinh-Arcsinh an appropriate distribution for modeling this particular phenomena? Why or why not? (answer in detail)"/
+
+Sinh-Arcsinh is appropriate because it supports skewed distribution as the rainfall dataset is. It could helping caputre outlier rainfall events. A possible limitation of the distribution is that the Sinh-Arcsinh distribution is unbounded, allowing for negative values, while rainfall is strictly non-negative. But the model often predicted near-zero means during dry periods, the distribution can technically assign non-zero probability to negative rainfall.
+
+So its practival utility was limited in this experience. Or maybe, I could not achieve a model that could properly compute good parameters and make the Sinh-Arcsinh not well used. However, because of the loss and MADs values, I think that the model is relatively good.
+
+** /"Are your models doing a good job at predicting precipitation? Justify your answer."/
+
+I think yes, the models are doing a good job at predicting precipitation. The training and validation loss curves show improvement across all 8 rotations, with no sign of overfitting. Also, the MAD for mean and median are both slightly better than the MAD for always predicting zero.
+

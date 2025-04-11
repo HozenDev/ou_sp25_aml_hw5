@@ -2,16 +2,13 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
+
 from mesonet_support import extract_station_timeseries, get_mesonet_folds
 import keras
+
 # Tensorflow
 import tensorflow_probability as tfp
-
-# Sub namespaces that are useful later
-# Tensorflow Distributions
 tfd = tfp.distributions
-# Probability Layers 
-tfpl = tfp.layers
 
 from parser import check_args, create_parser
 
@@ -62,65 +59,29 @@ def load_results(results_dir):
 
     return results
 
-# ------------------------------
-# Figure 1: Loss curves
-# ------------------------------
-def plot_loss_curves(results):
-    os.makedirs("figures", exist_ok=True)
-
-    plt.figure()
-    for res in results:
-        plt.plot(res['history']['loss'], label=f"Rotation {res['rotation']}")
-    plt.xlabel("Epoch")
-    plt.ylabel("Training NLL")
-    plt.title("Training Loss")
-    plt.legend()
-    plt.savefig("figures/figure1a_training_loss.png")
-
-    plt.figure()
-    for res in results:
-        plt.plot(res['history']['val_loss'], label=f"Rotation {res['rotation']}")
-    plt.xlabel("Epoch")
-    plt.ylabel("Validation NLL")
-    plt.title("Validation Loss")
-    plt.legend()
-    plt.savefig("figures/figure1b_validation_loss_v.png")
-
-# ------------------------------
-# Figure 2: Time-series for 1 station using provided function
-# ------------------------------
-def plot_figure2(res, dataset_path, rotation=0, station_indices=[0, 5, 10, 15], 
-                 window_size=100, output_path='figure_2.png'):
+def plot_figure2(res, dataset_path, rotation=0, station_indices=[0, 5, 10, 15], window_size=100, output_path='figure_2.png'):
     """
-    Plot Figure 2 with predicted and observed rainfall time series from selected stations.
-
-    Parameters:
-    - results_path (str): Path to results pickle file (e.g., "Net_R0_results.pkl")
-    - dataset_path (str): Path to Mesonet dataset CSV
-    - rotation (int): Rotation index to ensure same station split
-    - station_indices (list): List of station indices to visualize
-    - window_size (int): Size of the time slice per station
-    - output_path (str): Where to save the output figure
+    Plot Figure 2
     """
     _, _, _, _, _, _, test_x, test_y, test_nstations = get_mesonet_folds(
         dataset_fname=dataset_path, rotation=rotation)
 
     # If pred_mean is scalar, rebuild predictions
-    if np.isscalar(res.get('pred_mean', 0)) or not hasattr(res['pred_mean'], '__len__'):
-        print("Detected scalar in results — reconstructing distributions...")
-        mu = res['mu']
-        std = res['std']
-        skew = res['skew']
-        tail = res['tail']
-        dist = tfd.SinhArcsinh(loc=mu, scale=std, skewness=skew, tailweight=tail)
-        samples = dist.sample(1000).numpy()
-        print("samples shape:", samples.shape)
+    mu = res['mu']
+    std = res['std']
+    skew = res['skew']
+    tail = res['tail']
 
-        res['pred_mean'] = np.mean(samples, axis=0)
-        res['percentile_10'] = np.percentile(samples, 10, axis=0)
-        res['percentile_25'] = np.percentile(samples, 25, axis=0)
-        res['percentile_75'] = np.percentile(samples, 75, axis=0)
-        res['percentile_90'] = np.percentile(samples, 90, axis=0)
+    dist = tfd.SinhArcsinh(loc=mu, scale=std, skewness=skew, tailweight=tail)
+    samples = dist.sample(1000).numpy()
+
+    print("samples shape:", samples.shape)
+
+    res['pred_mean'] = np.mean(samples, axis=0)
+    res['percentile_10'] = np.percentile(samples, 10, axis=0)
+    res['percentile_25'] = np.percentile(samples, 25, axis=0)
+    res['percentile_75'] = np.percentile(samples, 75, axis=0)
+    res['percentile_90'] = np.percentile(samples, 90, axis=0)
     
     # Unpack predicted values
     pred_mean = res['mu']
@@ -204,18 +165,12 @@ def plot_param_scatter(all_results):
     
     print(mu.shape, std.shape, skew.shape, tail.shape, y_true.shape)
 
-    scatter_plot(y_true, mu, "Observed RAIN", "Predicted Mean",
-                 "Figure 3a: Predicted Mean vs. Observed", "figures/figure3a_mean_vs_observed_v.png")
-    scatter_plot(y_true, std, "Observed RAIN", "Predicted Std Dev",
-                 "Figure 3b: Std Dev vs. Observed", "figures/figure3b_std_vs_observed_v.png")
-    scatter_plot(y_true, skew, "Observed RAIN", "Predicted Skewness",
-                 "Figure 3c: Skewness vs. Observed", "figures/figure3c_skew_vs_observed_v.png")
-    scatter_plot(y_true, tail, "Observed RAIN", "Predicted Tailweight",
-                 "Figure 3d: Tailweight vs. Observed", "figures/figure3d_tail_vs_observed_v.png")
+    scatter_plot(y_true, mu, "Observed RAIN", "Predicted Mean", "Figure 3a: Predicted Mean vs. Observed", "figures/figure_3a.png")
+    scatter_plot(y_true, std, "Observed RAIN", "Predicted Std Dev", "Figure 3b: Std Dev vs. Observed", "figures/figure_3b.png")
+    scatter_plot(y_true, skew, "Observed RAIN", "Predicted Skewness", "Figure 3c: Skewness vs. Observed", "figures/figure_3c.png")
+    scatter_plot(y_true, tail, "Observed RAIN", "Predicted Tailweight", "Figure 3d: Tailweight vs. Observed", "figures/figure_3d.png")
 
-# ------------------------------
-# Figure 4: MADs
-# ------------------------------
+# Figure 4
 def plot_mad_bars(results):
     rotations = [r['rotation'] for r in results]
     mad_mean = [r['mad_mean'] for r in results]
@@ -225,24 +180,17 @@ def plot_mad_bars(results):
     x = np.arange(len(rotations))
     bar_width = 0.10
     width = 0.35
-
-    import random
-    for i in range(len(rotations)):
-        mad_mean[i] = mad_median[i] + random.uniform(0.01, 0.03)
     
     plt.figure()
     plt.bar(x - width/2, mad_median, bar_width, label="MAD Median")
     plt.bar(x, mad_mean, bar_width, label="MAD Mean")
     plt.bar(x + width/2, mad_zero, bar_width, label="MAD Zero")
-    plt.xticks(x, [f"R{r}" for r in rotations])
+    plt.xticks(x, [f"R{r}" for r in range(len(rotations))])
     plt.ylabel("MAD")
     plt.title("Figure 4: MAD Across Rotations")
     plt.legend()
-    plt.savefig("figures/figure4_mad_v.png")
+    plt.savefig("figures/figure_4.png")
 
-# ------------------------------
-# Run all
-# ------------------------------
 if __name__ == "__main__":
     # Parse command-line arguments
     parser = create_parser()
@@ -251,14 +199,8 @@ if __name__ == "__main__":
     
     all_results = load_results(["./models/exp_v/"])
 
-    print("Generating Figure 1...")
-    plot_loss_curves(all_results)
-
-    print("Generating Figure 2...")
+    print("Plotting results...")
     plot_figure2(all_results[0], dataset_path=args.dataset, rotation=1, station_indices=[0, 3, 5, 7], window_size=120, output_path='figures/figure_2.png')
-
-    print("Generating Figure 3...")
-    plot_param_scatter(all_results)
-
-    print("Generating Figure 4...")
-    plot_mad_bars(all_results)
+    # plot_param_scatter(all_results)
+    # plot_mad_bars(all_results)
+    print("Done")

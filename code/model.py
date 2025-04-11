@@ -62,6 +62,7 @@ def fully_connected_stack(n_inputs,
         tensor = Dense(n, use_bias=True, name="hidden_%02d"%(i), activation=activation,
                  kernel_regularizer=kernel_regularizer)(tensor)
 
+        # Adding batch normalization
         if batch_normalization is not None:
             tensor = BatchNormalization()(tensor)
         
@@ -73,6 +74,7 @@ def fully_connected_stack(n_inputs,
     for i, (n, act) in enumerate(zip(n_output, activation_out)):
         o = Dense(n, use_bias=True, name="output%d"%i, activation=act)(tensor)
 
+        # Managing activation functions
         if act == 'softplus':
             o = Activation('softplus')(o)
             o = Lambda(lambda x: x + 1e-3)(o)  # make it positive
